@@ -142,14 +142,73 @@ better-prompt/
 2. 开发企业版功能
 3. 国际化和多语言支持
 
+## 🚀 快速开始
+
+### 在线访问
+直接访问部署的在线版本即可使用所有功能。
+
+### 本地运行
+```bash
+# 克隆仓库
+git clone https://github.com/your-username/better-prompt.git
+
+# 进入项目目录
+cd better-prompt
+
+# 启动本地服务器
+python -m http.server 8000
+# 或使用 Node.js
+npx http-server
+
+# 访问 http://localhost:8000
+```
+
+### 环境要求
+- 现代浏览器（Chrome 80+, Firefox 75+, Safari 13+, Edge 80+）
+- 有效的 AI 提供商 API Key（Gemini、OpenAI 或 Anthropic）
+
+## 📦 项目信息
+
+### 版本历史
+- **v1.0.0** - 初始版本发布
+  - 完整模块化架构重构
+  - 支持多AI提供商
+  - 思考模式功能
+  - 历史记录管理系统
+
+### Git 提交规范
+```bash
+feat: 新功能
+fix: Bug修复
+docs: 文档更新
+style: 代码格式
+refactor: 重构
+test: 测试
+chore: 构建过程或辅助工具的变动
+```
+
 ## 📞 贡献指南
 
 欢迎社区贡献！如果您有任何建议或想要贡献代码，请：
 
 1. Fork 项目仓库
-2. 创建功能分支
-3. 提交您的更改
-4. 发起 Pull Request
+2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交您的更改 (`git commit -m 'feat: Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 发起 Pull Request
+
+### 开发环境搭建
+```bash
+# 克隆项目
+git clone https://github.com/your-username/better-prompt.git
+cd better-prompt
+
+# 创建开发分支
+git checkout -b dev
+
+# 安装开发工具（可选）
+npm install -g http-server
+```
 
 ## 📄 许可证
 
