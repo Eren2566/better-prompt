@@ -1,0 +1,248 @@
+:root {
+    --primary: #0a6e42;
+    --primary-light: #0d8d58;
+    --primary-gradient-start: #0d9488;
+    --primary-gradient-end: #0891b2;
+    --secondary: #3b82f6;
+    --info: #0284c7;
+    --text-dark: #1f2937;
+    --text-medium: #4b5563;
+    --text-light: #6b7280;
+    --bg-light: #f8faf9;
+    --border-light: #e5e7eb;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --card-bg: rgba(255, 255, 255, 0.96);
+
+    /* 深色模式变量 */
+    --dm-bg: #111827;
+    --dm-card-bg: rgba(14, 23, 42, 0.92);
+    --dm-text: #e5e7eb;
+    --dm-text-secondary: #9ca3af;
+    --dm-border: #343a46;
+    --dm-primary: #22c55e;
+    --dm-primary-light: #4ade80;
+    --dm-input-bg: rgba(30, 41, 59, 0.6);
+}
+
+/* 深色模式样式 */
+body.dark-mode {
+    background: linear-gradient(135deg, #0f172a 0%, #0d2538 100%);
+    color: var(--dm-text);
+}
+
+body.dark-mode .card {
+    background: var(--dm-card-bg);
+    border: 1px solid rgba(26, 40, 65, 0.5);
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.35);
+}
+
+body.dark-mode .card:hover {
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(55, 92, 140, 0.3);
+}
+
+body.dark-mode .divider {
+    border-image: linear-gradient(to right, var(--dm-primary) 0%, #22d3ee 100%) 1;
+}
+
+body.dark-mode .btn-primary {
+    background: linear-gradient(135deg, #0d9488 0%, #0891b2 100%);
+    box-shadow: 0 4px 14px rgba(8, 145, 178, 0.3);
+}
+
+body.dark-mode .btn-secondary {
+    background: rgba(14, 23, 42, 0.6); 
+    color: var(--dm-primary-light); 
+    border: 1px solid var(--dm-primary);
+}
+
+body.dark-mode .btn-secondary:hover { 
+    background: var(--dm-primary); 
+    color: var(--dm-text); 
+}
+
+body.dark-mode .input-field {
+    background: var(--dm-input-bg); 
+    border: 1px solid var(--dm-border); 
+    color: var(--dm-text);
+    box-shadow: inset 0 1px 4px rgba(0,0,0,0.2);
+}
+
+body.dark-mode .input-field:focus {
+    box-shadow: 0 0 0 3px rgba(13, 211, 253, 0.15);
+    border-color: #0d9488;
+}
+
+/* 深色模式模板选项卡 */
+body.dark-mode .template-tab-button {
+    color: var(--dm-primary-light);
+    border-color: var(--dm-border);
+    background-color: rgba(30, 41, 59, 0.4);
+}
+
+body.dark-mode .template-tab-button.active { 
+    color: white; 
+    box-shadow: 0 4px 10px rgba(13, 211, 253, 0.15);
+}
+
+body.dark-mode .template-tab-button.active::after {
+    background: linear-gradient(135deg, #0d9488 0%, #0ea5e9 100%);
+}
+
+body.dark-mode .template-tab-button:not(.active):hover {
+    background-color: rgba(13, 148, 136, 0.15);
+    border-color: var(--dm-primary);
+}
+
+body.dark-mode .stats-panel {
+    background: rgba(15, 23, 42, 0.5);
+    color: var(--dm-text-secondary);
+}
+
+body.dark-mode .decorative-element { 
+    opacity: 0.08; 
+}
+
+body.dark-mode .theme-toggle {
+    background: var(--dm-card-bg); 
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3); 
+    border: 1px solid rgba(55, 92, 140, 0.4);
+}
+
+body.dark-mode .theme-toggle i { 
+    color: var(--dm-primary); 
+}
+
+body.dark-mode .progress-bar {
+    background-color: var(--dm-border);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
+}
+
+body.dark-mode .progress-inner {
+    background: linear-gradient(to right, var(--dm-primary), var(--dm-primary-light));
+}
+
+body.dark-mode .modal {
+    background: var(--dm-card-bg);
+    border: 1px solid var(--dm-border);
+}
+
+body.dark-mode .modal-header { 
+    border-bottom-color: var(--dm-border); 
+}
+
+body.dark-mode .modal-footer { 
+    border-top-color: var(--dm-border); 
+}
+
+body.dark-mode .history-item {
+    background: rgba(30, 41, 59, 0.5);
+}
+
+body.dark-mode .history-item:hover {
+    background: rgba(30, 41, 59, 0.8);
+}
+
+body.dark-mode .history-item.active {
+    border-left: 4px solid var(--dm-primary);
+    background: rgba(29, 78, 216, 0.15);
+}
+
+body.dark-mode .history-date { 
+    color: var(--dm-text-secondary); 
+}
+
+body.dark-mode .accordion { 
+    border-color: var(--dm-border); 
+}
+
+body.dark-mode .accordion-header {
+    background-color: rgba(31, 41, 55, 0.5);
+}
+
+body.dark-mode .accordion-header:hover { 
+    background-color: rgba(31, 41, 55, 0.8); 
+}
+
+body.dark-mode .accordion-content {
+    background-color: rgba(17, 24, 39, 0.5);
+}
+
+body.dark-mode .history-badge {
+    background: var(--dm-primary);
+}
+
+/* 思考模式开关样式 */
+.thinking-toggle {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.thinking-checkbox {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.thinking-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+    border-radius: 24px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 2px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.thinking-icon {
+    position: absolute;
+    left: 4px;
+    font-size: 12px;
+    color: #6b7280;
+    transition: all 0.3s ease;
+    transform: translateX(0);
+}
+
+.thinking-checkbox:checked + .thinking-slider {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2), 0 0 0 2px rgba(34, 197, 94, 0.2);
+}
+
+.thinking-checkbox:checked + .thinking-slider .thinking-icon {
+    color: white;
+    transform: translateX(24px);
+}
+
+.thinking-toggle:hover .thinking-slider {
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 深色模式下的思考开关 */
+body.dark-mode .thinking-slider {
+    background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .thinking-icon {
+    color: #9ca3af;
+}
+
+body.dark-mode .thinking-checkbox:checked + .thinking-slider {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3), 0 0 0 2px rgba(5, 150, 105, 0.3);
+}
+
+body.dark-mode .thinking-checkbox:checked + .thinking-slider .thinking-icon {
+    color: #e5e7eb;
+}
