@@ -89,6 +89,20 @@
                                 <option value="gemini-2.5-flash-preview-05-20">Gemini 2.5 Flash (速度)</option>
                                 <option value="gemini-2.5-pro-preview-06-05" selected>Gemini 2.5 Pro (质量)</option>
                             </select>
+                            <!-- OpenRouter 自定义模型输入 -->
+                            <div id="customModelContainer" class="hidden bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-3 border border-blue-200 dark:border-blue-700">
+                                <div class="flex items-center mb-2">
+                                    <i class="fa-solid fa-plus-circle text-blue-600 dark:text-blue-400 mr-2"></i>
+                                    <span class="text-sm font-medium text-blue-800 dark:text-blue-300">添加自定义模型</span>
+                                </div>
+                                <div class="flex gap-2">
+                                    <input type="text" id="customModelInput" class="flex-1 input-field h-10 px-3 text-sm" placeholder="输入模型ID，如: anthropic/claude-3-sonnet">
+                                    <button id="addCustomModelButton" class="btn-secondary px-4 py-2 text-sm">
+                                        <i class="fa-solid fa-plus mr-1"></i>添加
+                                    </button>
+                                </div>
+                                <p class="text-xs text-blue-600 dark:text-blue-400 mt-1">支持 OpenRouter 平台上的所有模型</p>
+                            </div>
                             <!-- 思考模式开关 -->
                             <div id="thinkingModeContainer" class="hidden bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-lg p-3 border border-purple-200 dark:border-purple-700">
                                 <div class="flex items-center justify-between">
@@ -257,6 +271,7 @@
                         <option value="gemini">Google Gemini</option>
                         <option value="openai">OpenAI</option>
                         <option value="anthropic">Anthropic Claude</option>
+                        <option value="openrouter">OpenRouter</option>
                     </select>
                 </div>
                 <p class="text-slate-600 dark:text-slate-300 mb-4">
