@@ -8,6 +8,7 @@
 - **Gemini API** - Google的先进AI模型
 - **OpenAI API** - GPT系列模型
 - **Anthropic API** - Claude系列模型
+- **OpenRouter API** - 统一访问多种AI模型，支持自定义模型
 
 ### 📝 智能优化模板
 - **默认模板** - 平衡的优化策略
@@ -107,6 +108,13 @@ better-prompt/
 1. 访问 [Anthropic Console](https://console.anthropic.com/)
 2. 创建新的API密钥
 3. 复制密钥到应用设置中
+
+#### OpenRouter API
+1. 访问 [OpenRouter](https://openrouter.ai/)
+2. 注册账户并创建API密钥
+3. 复制密钥到应用设置中
+4. 可选择免费模型或付费模型
+5. 支持添加自定义模型
 
 ### 2. 配置应用
 

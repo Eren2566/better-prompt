@@ -8,7 +8,8 @@ export class Validators {
     static API_KEY_PATTERNS = {
         gemini: /^AI[a-zA-Z0-9_-]{35,40}$/,
         openai: /^sk-[a-zA-Z0-9]{48}$/,
-        anthropic: /^sk-ant-[a-zA-Z0-9_-]+$/
+        anthropic: /^sk-ant-[a-zA-Z0-9_-]+$/,
+        openrouter: /^sk-or-v1-[a-zA-Z0-9]{64}$/
     };
 
     /**

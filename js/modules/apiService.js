@@ -31,6 +31,16 @@ const API_PROVIDERS = {
         ],
         endpoint: 'https://api.anthropic.com/v1',
         signupUrl: 'https://console.anthropic.com/'
+    },
+    openrouter: {
+        name: 'OpenRouter',
+        models: [
+            { id: 'deepseek/deepseek-r1-0528:free', name: 'DeepSeek-R1-0528' },
+            { id: 'deepseek/deepseek-chat-v3-0324:free', name: 'DeepSeek-V3-0324' }
+        ],
+        endpoint: 'https://openrouter.ai/api/v1',
+        signupUrl: 'https://openrouter.ai/',
+        supportsCustomModels: true
     }
 };
 
@@ -169,6 +179,8 @@ export class ApiService {
                 return await this.callOpenAI(originalPrompt, systemInstruction, model, temperature);
             case 'anthropic':
                 return await this.callAnthropic(originalPrompt, systemInstruction, model, temperature);
+            case 'openrouter':
+                return await this.callOpenRouter(originalPrompt, systemInstruction, model, temperature);
             default:
                 throw new Error(`不支持的提供商: ${this.currentProvider}`);
         }
@@ -306,5 +318,87 @@ export class ApiService {
                 throw new Error('未能获取有效的优化结果');
             }
         });
+    }
+
+    /**
+     * 调用 OpenRouter API
+     */
+    async callOpenRouter(originalPrompt, systemInstruction, model, temperature) {
+        const apiKey = this.getCurrentApiKey();
+        
+        const url = `${API_PROVIDERS.openrouter.endpoint}/chat/completions`;
+        const payload = {
+            model,
+            messages: [
+                { role: "system", content: systemInstruction },
+                { role: "user", content: `原始提示词: ${originalPrompt}` }
+            ],
+            temperature,
+            max_tokens: 4000
+        };
+
+        return await this.callWithRetry(async () => {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`,
+                    'HTTP-Referer': window.location.origin,
+                    'X-Title': 'Better Prompt'
+                },
+                body: JSON.stringify(payload),
+                signal: AbortSignal.timeout(this.requestTimeout)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`API 请求失败 (${response.status}): ${errorData?.error?.message || '未知错误'}`);
+            }
+
+            const result = await response.json();
+            
+            if (result.choices?.[0]?.message?.content) {
+                return result.choices[0].message.content;
+            } else {
+                throw new Error('未能获取有效的优化结果');
+            }
+        });
+    }
+
+    /**
+     * 添加自定义模型到 OpenRouter
+     * @param {string} modelId - 模型ID
+     * @param {string} modelName - 模型显示名称
+     */
+    addCustomModel(modelId, modelName) {
+        if (this.currentProvider === 'openrouter') {
+            const provider = API_PROVIDERS.openrouter;
+            const existingModel = provider.models.find(m => m.id === modelId);
+            if (!existingModel) {
+                provider.models.push({ id: modelId, name: modelName });
+            }
+        }
+    }
+
+    /**
+     * 移除自定义模型
+     * @param {string} modelId - 模型ID
+     */
+    removeCustomModel(modelId) {
+        if (this.currentProvider === 'openrouter') {
+            const provider = API_PROVIDERS.openrouter;
+            const defaultModels = ['deepseek/deepseek-r1-0528:free', 'deepseek/deepseek-chat-v3-0324:free'];
+            if (!defaultModels.includes(modelId)) {
+                provider.models = provider.models.filter(m => m.id !== modelId);
+            }
+        }
+    }
+
+    /**
+     * 获取当前提供商是否支持自定义模型
+     * @returns {boolean}
+     */
+    supportsCustomModels() {
+        return API_PROVIDERS[this.currentProvider]?.supportsCustomModels || false;
     }
 } 

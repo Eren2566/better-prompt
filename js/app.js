@@ -38,6 +38,9 @@ class BetterPromptApp {
             
             // 设置相关
             modelSelect: document.getElementById('modelSelect'),
+            customModelContainer: document.getElementById('customModelContainer'),
+            customModelInput: document.getElementById('customModelInput'),
+            addCustomModelButton: document.getElementById('addCustomModelButton'),
             temperatureSlider: document.getElementById('temperatureSlider'),
             temperatureValue: document.getElementById('temperatureValue'),
             strengthSelect: document.getElementById('strengthSelect'),
@@ -228,6 +231,16 @@ class BetterPromptApp {
         }
         if (this.elements.modelSelect) {
             this.elements.modelSelect.addEventListener('change', () => this.updateModelSelection());
+        }
+        if (this.elements.addCustomModelButton) {
+            this.elements.addCustomModelButton.addEventListener('click', () => this.addCustomModel());
+        }
+        if (this.elements.customModelInput) {
+            this.elements.customModelInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    this.addCustomModel();
+                }
+            });
         }
         if (this.elements.thinkingModeToggle) {
             this.elements.thinkingModeToggle.addEventListener('change', () => {
@@ -560,6 +573,12 @@ class BetterPromptApp {
         // 更新链接
         if (this.elements.providerLink) {
             this.elements.providerLink.href = providers[currentProvider].signupUrl;
+        }
+        
+        // 显示/隐藏自定义模型容器
+        if (this.elements.customModelContainer) {
+            const supportsCustomModels = this.apiService.supportsCustomModels();
+            this.elements.customModelContainer.classList.toggle('hidden', !supportsCustomModels);
         }
         
         // 更新模型选择器
@@ -1627,6 +1646,75 @@ class BetterPromptApp {
         
         const templates = this.templateManager.prompts;
         return templates[templateName] || '';
+    }
+
+    /**
+     * 添加自定义模型
+     */
+    addCustomModel() {
+        if (!this.elements.customModelInput) return;
+        
+        const modelId = this.elements.customModelInput.value.trim();
+        if (!modelId) {
+            this.showToast('请输入模型ID', true);
+            return;
+        }
+        
+        // 验证模型ID格式（基本验证）
+        if (!modelId.includes('/')) {
+            this.showToast('模型ID格式应为: 提供商/模型名称', true);
+            return;
+        }
+        
+        // 生成模型显示名称
+        const modelName = this.generateModelDisplayName(modelId);
+        
+        try {
+            // 添加到API服务
+            this.apiService.addCustomModel(modelId, modelName);
+            
+            // 更新模型选择器
+            this.updateModelOptions();
+            
+            // 选中新添加的模型
+            if (this.elements.modelSelect) {
+                this.elements.modelSelect.value = modelId;
+            }
+            
+            // 清空输入框
+            this.elements.customModelInput.value = '';
+            
+            this.showToast(`已添加模型: ${modelName}`);
+        } catch (error) {
+            this.showToast(`添加模型失败: ${error.message}`, true);
+        }
+    }
+
+    /**
+     * 生成模型显示名称
+     */
+    generateModelDisplayName(modelId) {
+        const parts = modelId.split('/');
+        if (parts.length >= 2) {
+            const provider = parts[0];
+            const model = parts.slice(1).join('/');
+            
+            // 简化常见提供商名称
+            const providerMap = {
+                'anthropic': 'Anthropic',
+                'openai': 'OpenAI',
+                'google': 'Google',
+                'meta-llama': 'Meta',
+                'mistralai': 'Mistral',
+                'cohere': 'Cohere',
+                'deepseek': 'DeepSeek'
+            };
+            
+            const displayProvider = providerMap[provider] || provider;
+            return `${displayProvider} ${model}`;
+        }
+        
+        return modelId;
     }
 }
 
