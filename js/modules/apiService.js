@@ -35,8 +35,8 @@ const API_PROVIDERS = {
     openrouter: {
         name: 'OpenRouter',
         models: [
-            { id: 'deepseek/deepseek-r1-0528:free', name: 'DeepSeek R1 (推理)' },
-            { id: 'deepseek/deepseek-chat-v3-0324:free', name: 'DeepSeek Chat V3 (对话)' }
+            { id: 'deepseek/deepseek-r1-0528:free', name: 'DeepSeek-R1-0528' },
+            { id: 'deepseek/deepseek-chat-v3-0324:free', name: 'DeepSeek-V3-0324' }
         ],
         endpoint: 'https://openrouter.ai/api/v1',
         signupUrl: 'https://openrouter.ai/',
