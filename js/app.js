@@ -33,7 +33,6 @@ class BetterPromptApp {
             optimizeButton: document.getElementById('optimizeButton'),
             refineButton: document.getElementById('refineButton'),
             copyButton: document.getElementById('copyButton'),
-            formatButton: document.getElementById('formatButton'),
             saveButton: document.getElementById('saveButton'),
             clearButton: document.getElementById('clearButton'),
             
@@ -42,8 +41,11 @@ class BetterPromptApp {
             temperatureSlider: document.getElementById('temperatureSlider'),
             temperatureValue: document.getElementById('temperatureValue'),
             strengthSelect: document.getElementById('strengthSelect'),
-            thinkingMode: document.getElementById('thinkingMode'),
-            thinkingToggle: document.getElementById('thinkingToggle'),
+            thinkingModeContainer: document.getElementById('thinkingModeContainer'),
+            thinkingModeToggle: document.getElementById('thinkingModeToggle'),
+            thinkingDepthContainer: document.getElementById('thinkingDepthContainer'),
+            thinkingBudgetSlider: document.getElementById('thinkingBudgetSlider'),
+            thinkingBudgetValue: document.getElementById('thinkingBudgetValue'),
             
             // 模板相关
             templateTabs: document.getElementById('templateTabs'),
@@ -99,7 +101,10 @@ class BetterPromptApp {
             
             // 通知相关
             toast: document.getElementById('toast'),
-            toastMessage: document.getElementById('toastMessage')
+            toastMessage: document.getElementById('toastMessage'),
+            
+            // 模板提示框相关
+            templateTooltip: document.getElementById('templateTooltip')
         };
     }
 
@@ -110,7 +115,6 @@ class BetterPromptApp {
         return {
             isOptimizing: false,
             currentProvider: StorageManager.get('currentProvider', 'gemini'),
-            thinkingMode: StorageManager.get('thinkingMode', false),
             multiRoundSettings: StorageManager.get('multiRoundSettings', {
                 enabled: false,
                 rounds: 3,
@@ -132,6 +136,13 @@ class BetterPromptApp {
         this.initializeEventListeners();
         this.updateUI();
         this.loadSettings();
+        
+        // 初始化思考模式显示状态
+        if (this.elements.modelSelect) {
+            const currentModel = this.elements.modelSelect.value;
+            this.updateThinkingModeVisibility(currentModel);
+            this.restoreThinkingModeState(currentModel);
+        }
         
         // 设置焦点
         if (this.elements.originalPrompt) {
@@ -184,6 +195,12 @@ class BetterPromptApp {
         if (this.elements.originalPrompt) {
             this.elements.originalPrompt.addEventListener('input', () => this.updateCharCount());
         }
+        if (this.elements.optimizedResult) {
+            this.elements.optimizedResult.addEventListener('input', () => {
+                const text = this.elements.optimizedResult.textContent || '';
+                this.updateResultStats(text);
+            });
+        }
         if (this.elements.exampleButton) {
             this.elements.exampleButton.addEventListener('click', () => this.showExample());
         }
@@ -197,9 +214,6 @@ class BetterPromptApp {
         }
         if (this.elements.copyButton) {
             this.elements.copyButton.addEventListener('click', () => this.copyResult());
-        }
-        if (this.elements.formatButton) {
-            this.elements.formatButton.addEventListener('click', () => this.formatResult());
         }
         if (this.elements.saveButton) {
             this.elements.saveButton.addEventListener('click', () => this.saveResult());
@@ -215,13 +229,25 @@ class BetterPromptApp {
         if (this.elements.modelSelect) {
             this.elements.modelSelect.addEventListener('change', () => this.updateModelSelection());
         }
-        if (this.elements.thinkingMode) {
-            this.elements.thinkingMode.addEventListener('change', () => this.updateThinkingMode());
+        if (this.elements.thinkingModeToggle) {
+            this.elements.thinkingModeToggle.addEventListener('change', () => {
+                this.updateThinkingDepthVisibility();
+                this.saveThinkingModeState();
+            });
+        }
+        if (this.elements.thinkingBudgetSlider) {
+            this.elements.thinkingBudgetSlider.addEventListener('input', () => {
+                this.updateThinkingBudgetDisplay();
+                this.saveThinkingModeState();
+            });
         }
 
         // 模板选择事件
         if (this.elements.templateTabs) {
             this.elements.templateTabs.addEventListener('click', (e) => this.handleTemplateSelection(e));
+            // 添加模板悬停事件
+            this.elements.templateTabs.addEventListener('mouseenter', (e) => this.handleTemplateHover(e), true);
+            this.elements.templateTabs.addEventListener('mouseleave', (e) => this.handleTemplateLeave(e), true);
         }
 
         // API Key 相关事件
@@ -289,17 +315,26 @@ class BetterPromptApp {
         // 模态框关闭事件
         if (this.elements.apiKeyModal) {
             this.elements.apiKeyModal.addEventListener('click', (e) => {
-                if (e.target === this.elements.apiKeyModal) this.closeApiKeyModal();
+                if (e.target === this.elements.apiKeyModal) {
+                    this.closeApiKeyModal();
+                    this.hideTemplateTooltip();
+                }
             });
         }
         if (this.elements.historyModal) {
             this.elements.historyModal.addEventListener('click', (e) => {
-                if (e.target === this.elements.historyModal) this.closeHistoryModal();
+                if (e.target === this.elements.historyModal) {
+                    this.closeHistoryModal();
+                    this.hideTemplateTooltip();
+                }
             });
         }
         if (this.elements.advancedSettingsModal) {
             this.elements.advancedSettingsModal.addEventListener('click', (e) => {
-                if (e.target === this.elements.advancedSettingsModal) this.closeAdvancedSettings();
+                if (e.target === this.elements.advancedSettingsModal) {
+                    this.closeAdvancedSettings();
+                    this.hideTemplateTooltip();
+                }
             });
         }
 
@@ -312,6 +347,14 @@ class BetterPromptApp {
 
         // 键盘快捷键
         document.addEventListener('keydown', (e) => this.handleKeyboardShortcuts(e));
+
+        // 窗口大小变化事件
+        window.addEventListener('resize', () => {
+            if (this.elements.optimizedResult) {
+                const text = this.elements.optimizedResult.textContent || '';
+                this.adjustResultHeight(text);
+            }
+        });
     }
 
     /**
@@ -348,9 +391,6 @@ class BetterPromptApp {
         if (this.elements.timeout) {
             this.elements.timeout.value = this.state.errorHandlingSettings.timeout;
         }
-        if (this.elements.thinkingMode) {
-            this.elements.thinkingMode.checked = this.state.thinkingMode;
-        }
         
         this.updateRoundCountDisplay();
         
@@ -377,11 +417,79 @@ class BetterPromptApp {
         if (!text || !text.trim()) {
             this.elements.charsResult.textContent = '0';
             this.elements.statsPanel.classList.add('invisible');
+            this.adjustResultHeight('');
             return;
         }
         
         this.elements.charsResult.textContent = text.length;
         this.elements.statsPanel.classList.remove('invisible');
+        this.adjustResultHeight(text);
+    }
+
+    /**
+     * 根据内容动态调整优化结果区域高度
+     */
+    adjustResultHeight(text) {
+        if (!this.elements.optimizedResult) return;
+        
+        const element = this.elements.optimizedResult;
+        
+        // 如果没有内容，保持最小高度
+        if (!text || !text.trim()) {
+            element.style.height = '';
+            element.style.overflowY = 'hidden';
+            return;
+        }
+        
+        // 检测是否为移动端
+        const isMobile = window.innerWidth <= 768;
+        
+        // 临时设置为auto来计算实际需要的高度
+        const originalHeight = element.style.height;
+        const originalOverflow = element.style.overflowY;
+        element.style.height = 'auto';
+        element.style.overflowY = 'hidden';
+        
+        // 获取内容的实际高度
+        const scrollHeight = element.scrollHeight;
+        
+        // 根据设备类型设置不同的高度限制
+        let minHeight, maxHeight;
+        if (isMobile) {
+            minHeight = 200; // 移动端较小的最小高度
+            maxHeight = Math.min(window.innerHeight * 0.5, 300); // 移动端最大高度
+        } else {
+            minHeight = 300; // 桌面端最小高度
+            maxHeight = Math.min(window.innerHeight * 0.7, 800); // 桌面端最大高度
+        }
+        
+        // 计算合适的高度
+        let newHeight;
+        if (scrollHeight <= minHeight) {
+            // 内容较少时，使用最小高度
+            newHeight = minHeight;
+        } else if (scrollHeight <= maxHeight) {
+            // 内容适中时，使用实际高度
+            newHeight = scrollHeight + 10; // 添加一点缓冲空间
+        } else {
+            // 内容过多时，使用最大高度并显示滚动条
+            newHeight = maxHeight;
+        }
+        
+        // 应用新高度
+        element.style.height = `${newHeight}px`;
+        
+        // 如果内容超过最大高度，确保滚动条可见
+        if (scrollHeight > maxHeight) {
+            element.style.overflowY = 'auto';
+        } else {
+            element.style.overflowY = 'hidden';
+        }
+        
+        // 平滑滚动到顶部（如果内容发生变化）
+        if (element.scrollTop > 0) {
+            element.scrollTop = 0;
+        }
     }
 
     /**
@@ -435,20 +543,6 @@ class BetterPromptApp {
         if (!this.elements.roundCount || !this.elements.roundCountValue) return;
         
         this.elements.roundCountValue.textContent = this.elements.roundCount.value;
-    }
-
-    /**
-     * 更新思考模式
-     */
-    updateThinkingMode() {
-        if (!this.elements.thinkingMode) return;
-        
-        this.state.thinkingMode = this.elements.thinkingMode.checked;
-        StorageManager.set('thinkingMode', this.state.thinkingMode);
-        
-        // 显示状态提示
-        const statusText = this.state.thinkingMode ? '已启用思考模式，响应时间会更长但分析更深入' : '已关闭思考模式';
-        this.showToast(statusText);
     }
 
     /**
@@ -543,7 +637,8 @@ class BetterPromptApp {
                 temperature: this.elements.temperatureSlider ? parseFloat(this.elements.temperatureSlider.value) : 0.5,
                 strength: this.elements.strengthSelect ? this.elements.strengthSelect.value : 'medium',
                 multiRound: this.state.multiRoundSettings.enabled ? this.state.multiRoundSettings : null,
-                thinkingMode: this.state.thinkingMode
+                thinkingMode: this.elements.thinkingModeToggle ? this.elements.thinkingModeToggle.checked : false,
+                thinkingBudget: this.elements.thinkingBudgetSlider ? parseInt(this.elements.thinkingBudgetSlider.value) : 0
             };
 
             this.updateProgress(20);
@@ -570,7 +665,8 @@ class BetterPromptApp {
                 temperature: this.elements.temperatureSlider ? parseFloat(this.elements.temperatureSlider.value) : 0.5,
                 strength: this.elements.strengthSelect ? this.elements.strengthSelect.value : 'medium',
                 provider: this.apiService.currentProvider,
-                thinkingMode: this.state.thinkingMode
+                thinkingMode: this.elements.thinkingModeToggle ? this.elements.thinkingModeToggle.checked : false,
+                thinkingBudget: this.elements.thinkingBudgetSlider ? parseInt(this.elements.thinkingBudgetSlider.value) : 0
             });
 
             this.updateHistoryBadge();
@@ -695,48 +791,7 @@ class BetterPromptApp {
      * @param {string} text - 待格式化的文本
      * @returns {string} 格式化后的文本
      */
-    formatOptimizedText(text) {
-        if (!text || typeof text !== 'string') return '';
-        
-        // 清理多余空格
-        text = text.replace(/\s+/g, ' ').trim();
-        
-        // 在标点符号后添加适当的换行
-        text = text.replace(/([。！？])\s*/g, '$1\n\n'); // 中文句号后换行
-        text = text.replace(/([.!?])\s*([A-Z])/g, '$1\n\n$2'); // 英文句号后换行
-        text = text.replace(/([；;])\s*/g, '$1\n'); // 分号后换行
-        text = text.replace(/([：:])\s*([^\n])/g, '$1\n$2'); // 冒号后可能换行
-        
-        // 处理列表项格式
-        text = text.replace(/(\d+\.|[•\-\*])\s*/g, '\n$1 '); // 数字列表和符号列表
-        
-        // 处理段落标记
-        text = text.replace(/(核心目标|角色与背景|关键指令|输入信息|输出要求|约束与偏好)/g, '\n\n## $1\n');
-        
-        // 清理多余的换行
-        text = text.replace(/\n{3,}/g, '\n\n');
-        text = text.replace(/^\n+/, '');
-        
-        return text;
-    }
 
-    /**
-     * 格式化结果
-     */
-    formatResult() {
-        if (!this.elements.optimizedResult) return;
-        
-        let text = this.elements.optimizedResult.textContent || '';
-        if (!text.trim()) {
-            this.showToast('没有内容可格式化');
-            return;
-        }
-        
-        const formattedText = this.formatOptimizedText(text);
-        this.elements.optimizedResult.textContent = formattedText;
-        this.updateResultStats(formattedText);
-        this.showToast('提示词格式已规范化！');
-    }
 
     /**
      * 保存结果
@@ -1166,6 +1221,11 @@ class BetterPromptApp {
      * 处理键盘快捷键
      */
     handleKeyboardShortcuts(e) {
+        // ESC键隐藏模板提示框
+        if (e.key === 'Escape') {
+            this.hideTemplateTooltip();
+        }
+        
         if (e.ctrlKey || e.metaKey) {
             switch (e.key) {
                 case 'Enter':
@@ -1194,10 +1254,379 @@ class BetterPromptApp {
      * 更新模型选择
      */
     updateModelSelection() {
-        // 可以在这里添加模型选择的特殊处理逻辑
         if (this.elements.modelSelect) {
-            console.log('模型已切换到:', this.elements.modelSelect.value);
+            const selectedModel = this.elements.modelSelect.value;
+            console.log('模型已切换到:', selectedModel);
+            
+            // 保存当前思考模式状态
+            this.saveThinkingModeState();
+            
+            // 显示/隐藏思考模式开关
+            this.updateThinkingModeVisibility(selectedModel);
+            
+            // 恢复该模型的思考模式状态
+            this.restoreThinkingModeState(selectedModel);
         }
+    }
+
+    /**
+     * 保存思考模式状态
+     */
+    saveThinkingModeState() {
+        if (!this.elements.modelSelect || !this.elements.thinkingModeToggle || !this.elements.thinkingBudgetSlider) return;
+        
+        const currentModel = this.elements.modelSelect.value;
+        const thinkingState = {
+            enabled: this.elements.thinkingModeToggle.checked,
+            budget: parseInt(this.elements.thinkingBudgetSlider.value)
+        };
+        
+        StorageManager.set(`thinkingMode_${currentModel}`, thinkingState);
+    }
+
+    /**
+     * 恢复思考模式状态
+     */
+    restoreThinkingModeState(model) {
+        if (!this.elements.thinkingModeToggle || !this.elements.thinkingBudgetSlider) return;
+        
+        const savedState = StorageManager.get(`thinkingMode_${model}`, null);
+        const isGeminiFlash = model === 'gemini-2.5-flash-preview-05-20';
+        const isGeminiPro = model === 'gemini-2.5-pro-preview-06-05';
+        
+        if (savedState) {
+            // 恢复保存的状态
+            this.elements.thinkingModeToggle.checked = savedState.enabled;
+            this.elements.thinkingBudgetSlider.value = savedState.budget;
+            if (this.elements.thinkingBudgetValue) {
+                this.elements.thinkingBudgetValue.textContent = savedState.budget;
+            }
+        } else {
+            // 设置默认状态
+            this.elements.thinkingModeToggle.checked = false;
+            
+            if (isGeminiFlash) {
+                this.elements.thinkingBudgetSlider.value = 0;
+                if (this.elements.thinkingBudgetValue) {
+                    this.elements.thinkingBudgetValue.textContent = 0;
+                }
+            } else if (isGeminiPro) {
+                this.elements.thinkingBudgetSlider.value = 128;
+                if (this.elements.thinkingBudgetValue) {
+                    this.elements.thinkingBudgetValue.textContent = 128;
+                }
+            }
+        }
+        
+        // 更新思考深度容器的显示状态
+        this.updateThinkingDepthVisibility();
+    }
+
+    /**
+     * 更新思考模式的显示/隐藏
+     */
+    updateThinkingModeVisibility(model) {
+        if (!this.elements.thinkingModeContainer) return;
+        
+        const isGeminiFlash = model === 'gemini-2.5-flash-preview-05-20';
+        const isGeminiPro = model === 'gemini-2.5-pro-preview-06-05';
+        const supportsThinking = isGeminiFlash || isGeminiPro;
+        
+        if (supportsThinking) {
+            this.elements.thinkingModeContainer.classList.remove('hidden');
+            // 根据模型类型更新滑块配置
+            this.updateThinkingSliderConfig(model);
+        } else {
+            this.elements.thinkingModeContainer.classList.add('hidden');
+            // 如果切换到其他模型，重置思考模式状态
+            if (this.elements.thinkingModeToggle) {
+                this.elements.thinkingModeToggle.checked = false;
+            }
+            if (this.elements.thinkingDepthContainer) {
+                this.elements.thinkingDepthContainer.classList.add('hidden');
+            }
+        }
+    }
+
+    /**
+     * 更新思考滑块配置
+     */
+    updateThinkingSliderConfig(model) {
+        if (!this.elements.thinkingBudgetSlider) return;
+        
+        const isGeminiFlash = model === 'gemini-2.5-flash-preview-05-20';
+        const isGeminiPro = model === 'gemini-2.5-pro-preview-06-05';
+        const rangeSpan = document.getElementById('thinkingBudgetRange');
+        
+        if (isGeminiFlash) {
+            // Flash模型：最大值24576，最小值0，默认8000
+            this.elements.thinkingBudgetSlider.min = 0;
+            this.elements.thinkingBudgetSlider.max = 24576;
+            this.elements.thinkingBudgetSlider.step = 512;
+            // 更新范围显示
+            if (rangeSpan) {
+                rangeSpan.textContent = '预算范围: 0-24576';
+            }
+        } else if (isGeminiPro) {
+            // Pro模型：最大值32768，最小值128，默认8192
+            this.elements.thinkingBudgetSlider.min = 128;
+            this.elements.thinkingBudgetSlider.max = 32768;
+            this.elements.thinkingBudgetSlider.step = 512;
+            // 更新范围显示
+            if (rangeSpan) {
+                rangeSpan.textContent = '预算范围: 128-32768';
+            }
+        }
+    }
+
+    /**
+     * 更新思考深度控制器的显示/隐藏
+     */
+    updateThinkingDepthVisibility() {
+        if (!this.elements.thinkingDepthContainer || !this.elements.thinkingModeToggle || !this.elements.modelSelect) return;
+        
+        const currentModel = this.elements.modelSelect.value;
+        const isGeminiFlash = currentModel === 'gemini-2.5-flash-preview-05-20';
+        const isGeminiPro = currentModel === 'gemini-2.5-pro-preview-06-05';
+        
+        if (this.elements.thinkingModeToggle.checked) {
+            this.elements.thinkingDepthContainer.classList.remove('hidden');
+            // 根据模型设置默认预算
+            if (this.elements.thinkingBudgetSlider) {
+                const currentValue = parseInt(this.elements.thinkingBudgetSlider.value);
+                let defaultValue;
+                
+                if (isGeminiFlash) {
+                    defaultValue = currentValue === 0 ? 8000 : currentValue;
+                } else if (isGeminiPro) {
+                    defaultValue = currentValue === 128 ? 8192 : currentValue;
+                }
+                
+                if (defaultValue && currentValue !== defaultValue) {
+                    this.elements.thinkingBudgetSlider.value = defaultValue;
+                    if (this.elements.thinkingBudgetValue) {
+                        this.elements.thinkingBudgetValue.textContent = defaultValue;
+                    }
+                }
+            }
+        } else {
+            this.elements.thinkingDepthContainer.classList.add('hidden');
+            // 关闭思考模式时，根据模型设置不同的预算值
+            if (this.elements.thinkingBudgetSlider) {
+                let closedValue;
+                if (isGeminiFlash) {
+                    closedValue = 0;
+                } else if (isGeminiPro) {
+                    closedValue = 128;
+                }
+                
+                if (closedValue !== undefined) {
+                    this.elements.thinkingBudgetSlider.value = closedValue;
+                    if (this.elements.thinkingBudgetValue) {
+                        this.elements.thinkingBudgetValue.textContent = closedValue;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 更新思考预算显示
+     */
+    updateThinkingBudgetDisplay() {
+        if (!this.elements.thinkingBudgetSlider || !this.elements.thinkingBudgetValue || !this.elements.modelSelect) return;
+        
+        const value = parseInt(this.elements.thinkingBudgetSlider.value);
+        const currentModel = this.elements.modelSelect.value;
+        const isGeminiFlash = currentModel === 'gemini-2.5-flash-preview-05-20';
+        const isGeminiPro = currentModel === 'gemini-2.5-pro-preview-06-05';
+        
+        this.elements.thinkingBudgetValue.textContent = value;
+        
+        // 只有当用户手动调节滑块时才进行自动开启/关闭逻辑
+        // 避免在程序自动设置预算时触发循环逻辑
+        if (this.elements.thinkingModeToggle) {
+            let shouldClose = false;
+            let shouldOpen = false;
+            
+            if (isGeminiFlash) {
+                // Flash模型：预算为0时关闭，大于0时开启
+                shouldClose = value === 0;
+                shouldOpen = value > 0 && !this.elements.thinkingModeToggle.checked;
+            } else if (isGeminiPro) {
+                // Pro模型：预算为128时关闭，大于128时开启
+                shouldClose = value === 128;
+                shouldOpen = value > 128 && !this.elements.thinkingModeToggle.checked;
+            }
+            
+            if (shouldClose) {
+                this.elements.thinkingModeToggle.checked = false;
+                if (this.elements.thinkingDepthContainer) {
+                    this.elements.thinkingDepthContainer.classList.add('hidden');
+                }
+            } else if (shouldOpen) {
+                this.elements.thinkingModeToggle.checked = true;
+                if (this.elements.thinkingDepthContainer) {
+                    this.elements.thinkingDepthContainer.classList.remove('hidden');
+                }
+            }
+        }
+    }
+
+    /**
+     * 处理模板悬停事件
+     */
+    handleTemplateHover(e) {
+        const button = e.target.closest('.template-tab-button');
+        if (!button) return;
+        
+        // 清除隐藏定时器
+        if (this.tooltipHideTimeout) {
+            clearTimeout(this.tooltipHideTimeout);
+            this.tooltipHideTimeout = null;
+        }
+        
+        const templateName = button.dataset.template;
+        
+        // 延迟显示提示框
+        this.tooltipShowTimeout = setTimeout(() => {
+            this.showTemplateTooltip(templateName, button);
+        }, 300); // 300ms延迟，更自然
+    }
+
+    /**
+     * 处理模板离开事件
+     */
+    handleTemplateLeave(e) {
+        const button = e.target.closest('.template-tab-button');
+        if (!button) return;
+        
+        // 清除显示定时器
+        if (this.tooltipShowTimeout) {
+            clearTimeout(this.tooltipShowTimeout);
+            this.tooltipShowTimeout = null;
+        }
+        
+        // 延迟隐藏，允许用户移动到提示框上
+        this.tooltipHideTimeout = setTimeout(() => {
+            this.hideTemplateTooltip();
+        }, 100);
+    }
+
+    /**
+     * 显示模板提示框
+     */
+    showTemplateTooltip(templateName, buttonElement) {
+        if (!this.elements.templateTooltip) return;
+        
+        // 获取完整的模板内容
+        const templateContent = this.getTemplateContent(templateName);
+        
+        if (!templateContent) return;
+        
+        // 设置提示框内容
+        this.elements.templateTooltip.textContent = templateContent;
+        
+        // 计算位置
+        const buttonRect = buttonElement.getBoundingClientRect();
+        const tooltipElement = this.elements.templateTooltip;
+        
+        // 重置类名
+        tooltipElement.className = 'template-tooltip';
+        
+        // 临时显示以获取尺寸
+        tooltipElement.style.visibility = 'hidden';
+        tooltipElement.classList.add('visible');
+        
+        const tooltipRect = tooltipElement.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        
+        // 计算水平位置（居中对齐）
+        let left = buttonRect.left + (buttonRect.width / 2) - (tooltipRect.width / 2);
+        
+        // 水平边界检查
+        if (left < 10) {
+            left = 10;
+        } else if (left + tooltipRect.width > viewportWidth - 10) {
+            left = viewportWidth - tooltipRect.width - 10;
+        }
+        
+        // 计算垂直位置和箭头方向
+        let top;
+        let arrowClass;
+        
+        if (buttonRect.top - tooltipRect.height - 12 > 10) {
+            // 上方有足够空间，显示在按钮上方
+            top = buttonRect.top - tooltipRect.height - 12;
+            arrowClass = 'arrow-down';
+        } else {
+            // 显示在按钮下方
+            top = buttonRect.bottom + 12;
+            arrowClass = 'arrow-up';
+        }
+        
+        // 设置位置和箭头
+        tooltipElement.style.left = `${left}px`;
+        tooltipElement.style.top = `${top}px`;
+        tooltipElement.classList.add(arrowClass);
+        tooltipElement.style.visibility = 'visible';
+        
+        // 添加提示框的鼠标事件，允许用户在提示框上滚动
+        const handleTooltipEnter = () => {
+            if (this.tooltipHideTimeout) {
+                clearTimeout(this.tooltipHideTimeout);
+                this.tooltipHideTimeout = null;
+            }
+        };
+        
+        const handleTooltipLeave = () => {
+            this.tooltipHideTimeout = setTimeout(() => {
+                this.hideTemplateTooltip();
+            }, 100);
+        };
+        
+        // 移除之前的事件监听器（如果存在）
+        tooltipElement.removeEventListener('mouseenter', this.tooltipEnterHandler);
+        tooltipElement.removeEventListener('mouseleave', this.tooltipLeaveHandler);
+        
+        // 保存事件处理器引用并添加新的监听器
+        this.tooltipEnterHandler = handleTooltipEnter;
+        this.tooltipLeaveHandler = handleTooltipLeave;
+        tooltipElement.addEventListener('mouseenter', this.tooltipEnterHandler);
+        tooltipElement.addEventListener('mouseleave', this.tooltipLeaveHandler);
+    }
+
+    /**
+     * 隐藏模板提示框
+     */
+    hideTemplateTooltip() {
+        if (!this.elements.templateTooltip) return;
+        
+        this.elements.templateTooltip.classList.remove('visible', 'arrow-up', 'arrow-down');
+        
+        // 清除所有定时器
+        if (this.tooltipHideTimeout) {
+            clearTimeout(this.tooltipHideTimeout);
+            this.tooltipHideTimeout = null;
+        }
+        if (this.tooltipShowTimeout) {
+            clearTimeout(this.tooltipShowTimeout);
+            this.tooltipShowTimeout = null;
+        }
+    }
+
+    /**
+     * 获取模板内容
+     */
+    getTemplateContent(templateName) {
+        if (templateName === 'custom') {
+            const customPrompt = this.templateManager.getCustomPrompt();
+            return customPrompt || '尚未设置自定义模板。请在高级设置中配置自定义优化指令。';
+        }
+        
+        const templates = this.templateManager.prompts;
+        return templates[templateName] || '';
     }
 }
 

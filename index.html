@@ -83,22 +83,47 @@
         
                 <div class="grid grid-cols-1 gap-5">
                     <div>
-                        <div class="flex items-center justify-between mb-1.5">
-                            <label for="modelSelect" class="block text-base font-medium text-text-dark">选择AI模型</label>
-                            <div class="flex items-center">
-                                <label class="text-sm text-medium-gray mr-2">思考模式</label>
-                                <div class="thinking-toggle" id="thinkingToggle" title="启用思考模式会让AI深度分析，但响应时间更长">
-                                    <input type="checkbox" id="thinkingMode" class="thinking-checkbox">
-                                    <span class="thinking-slider">
-                                        <i class="fa-solid fa-brain thinking-icon"></i>
-                                    </span>
+                        <label for="modelSelect" class="block text-base font-medium mb-1.5 text-text-dark">选择AI模型</label>
+                        <div class="space-y-3">
+                            <select id="modelSelect" class="w-full input-field h-12 px-4 text-sm">
+                                <option value="gemini-2.5-flash-preview-05-20">Gemini 2.5 Flash (速度)</option>
+                                <option value="gemini-2.5-pro-preview-06-05" selected>Gemini 2.5 Pro (质量)</option>
+                            </select>
+                            <!-- 思考模式开关 -->
+                            <div id="thinkingModeContainer" class="hidden bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-lg p-3 border border-purple-200 dark:border-purple-700">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <i class="fa-solid fa-brain text-purple-600 dark:text-purple-400 mr-2"></i>
+                                        <span class="text-sm font-medium text-purple-800 dark:text-purple-300">思考模式</span>
+                                        <span class="ml-2 text-xs bg-purple-100 dark:bg-purple-800 text-purple-700 dark:text-purple-300 px-2 py-0.5 rounded-full">Experimental</span>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="thinkingModeToggle" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
+                                    </label>
+                                </div>
+                                <p class="text-xs text-purple-600 dark:text-purple-400 mt-1 ml-6">启用后AI将展示推理过程，可能消耗更多时间和资源</p>
+                                
+                                <!-- 思考深度调节器 -->
+                                <div id="thinkingDepthContainer" class="hidden mt-3 pt-3 border-t border-purple-200 dark:border-purple-700">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <label for="thinkingBudgetSlider" class="text-xs font-medium text-purple-700 dark:text-purple-300">
+                                            思考深度: <span id="thinkingBudgetValue" class="font-bold text-purple-800 dark:text-purple-200">8000</span>
+                                        </label>
+                                        <span id="thinkingBudgetRange" class="text-xs text-purple-500 dark:text-purple-400">预算范围: 0-24576</span>
+                                    </div>
+                                    <input type="range" id="thinkingBudgetSlider" min="0" max="24576" step="512" value="8000"
+                                           class="w-full h-1.5 cursor-pointer rounded-lg appearance-none bg-gradient-to-r from-purple-300 via-purple-500 to-purple-700">
+                                    <div class="flex justify-between text-xs text-purple-500 dark:text-purple-400 mt-1">
+                                        <span>关闭</span>
+                                        <span>浅度</span>
+                                        <span>中等</span>
+                                        <span>深度</span>
+                                        <span>最大</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <select id="modelSelect" class="w-full input-field h-12 px-4 text-sm">
-                            <option value="gemini-2.5-flash-preview-05-20">Gemini 2.5 Flash (速度)</option>
-                            <option value="gemini-2.5-pro-preview-06-05" selected>Gemini 2.5 Pro (质量)</option>
-                        </select>
                     </div>
             
                     <div class="grid grid-cols-2 gap-5">
@@ -190,7 +215,7 @@
             
                     <div class="optimized-content">
                         <div id="optimizedResult" 
-                             class="w-full input-field p-5 text-base min-h-[250px] h-full leading-relaxed"
+                             class="w-full input-field p-5 text-base leading-relaxed"
                              contenteditable="true"
                              data-placeholder="优化后的提示词将显示在这里..."></div>
                     </div>
@@ -199,9 +224,6 @@
                         <div class="flex gap-3">
                             <button id="copyButton" class="btn-secondary px-5 py-2.5 text-sm font-medium flex items-center">
                                 <i class="fa-solid fa-copy mr-2"></i> 复制
-                            </button>
-                            <button id="formatButton" class="btn-secondary px-5 py-2.5 text-sm font-medium flex items-center">
-                                <i class="fa-solid fa-broom mr-2"></i> 规范格式
                             </button>
                         </div>
                 
@@ -358,6 +380,9 @@
             </div>
         </div>
     </div>
+
+    <!-- 模板悬停提示框 -->
+    <div id="templateTooltip" class="template-tooltip"></div>
 
     <!-- 通知Toast -->
     <div id="toast" class="toast">

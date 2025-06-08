@@ -292,12 +292,13 @@ body {
 .optimized-content {
     flex-grow: 1;
     position: relative;
-    max-height: 400px; /* 设置最大高度 */
+    /* 移除固定最大高度，让内容自适应 */
 }
 
 /* 优化结果显示区域样式 */
 #optimizedResult {
-    max-height: 350px; /* 设置最大高度，防止内容过长时撑开卡片 */
+    min-height: 300px; /* 设置初始最小高度，约为左侧卡片高度的一半 */
+    max-height: 70vh; /* 设置最大高度为视口高度的70%，防止过度撑开 */
     overflow-y: auto; /* 当内容超出时显示垂直滚动条 */
     overflow-x: hidden; /* 隐藏水平滚动条 */
     word-wrap: break-word; /* 长单词自动换行 */
@@ -305,6 +306,8 @@ body {
     white-space: pre-wrap; /* 保留换行和空格格式 */
     scrollbar-width: thin; /* Firefox 滚动条样式 */
     scrollbar-color: rgba(13, 148, 136, 0.3) transparent; /* Firefox 滚动条颜色 */
+    resize: vertical; /* 允许用户垂直调整大小 */
+    transition: height 0.3s ease; /* 高度变化时的平滑过渡 */
 }
 
 /* Webkit 浏览器滚动条样式 */
@@ -578,5 +581,156 @@ body {
     /* 移动端滚动条优化 */
     #optimizedResult::-webkit-scrollbar {
         width: 6px;
+    }
+}
+
+/* 模板悬停提示框 - 简约主题风格 */
+.template-tooltip {
+    position: fixed;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    max-width: 400px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1001;
+    opacity: 0;
+    transform: translateY(6px) scale(0.95);
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3), 0 2px 8px rgba(0, 0, 0, 0.1);
+    white-space: pre-wrap;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.template-tooltip.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: all;
+}
+
+/* 提示框滚动条样式 */
+.template-tooltip::-webkit-scrollbar {
+    width: 6px;
+}
+
+.template-tooltip::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    margin: 4px 0;
+}
+
+.template-tooltip::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 3px;
+    transition: background 0.2s ease;
+}
+
+.template-tooltip::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.6);
+}
+
+/* 提示框箭头 */
+.template-tooltip::before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+}
+
+/* 箭头指向下方（提示框在按钮上方） */
+.template-tooltip.arrow-down::before {
+    bottom: -7px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 7px 7px 0 7px;
+    border-color: #764ba2 transparent transparent transparent;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+/* 箭头指向上方（提示框在按钮下方） */
+.template-tooltip.arrow-up::before {
+    top: -7px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 0 7px 7px 7px;
+    border-color: transparent transparent #667eea transparent;
+    filter: drop-shadow(0 -2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.template-tooltip-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.template-tooltip-content::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 3px;
+}
+
+.template-tooltip-content::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+.template-tooltip-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+/* 深色模式下的模板提示框 */
+.dark-mode .template-tooltip {
+    background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+    box-shadow: 0 8px 32px rgba(45, 55, 72, 0.4), 0 2px 8px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.dark-mode .template-tooltip.arrow-down::before {
+    border-color: #4a5568 transparent transparent transparent;
+}
+
+.dark-mode .template-tooltip.arrow-up::before {
+    border-color: transparent transparent #2d3748 transparent;
+}
+
+.dark-mode .template-tooltip-content::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .template-tooltip-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.dark-mode .template-tooltip-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* 移动端模板提示框优化 */
+@media (max-width: 768px) {
+    .template-tooltip {
+        max-width: 320px;
+        max-height: 250px;
+        font-size: 0.7rem;
+        padding: 10px 14px;
+        line-height: 1.4;
+        border-radius: 10px;
+    }
+    
+    .template-tooltip.arrow-down::before,
+    .template-tooltip.arrow-up::before {
+        border-width: 6px;
+    }
+    
+    .template-tooltip.arrow-down::before {
+        bottom: -6px;
+        border-width: 6px 6px 0 6px;
+    }
+    
+    .template-tooltip.arrow-up::before {
+        top: -6px;
+        border-width: 0 6px 6px 6px;
     }
 } 

@@ -137,7 +137,8 @@ export class ApiService {
             temperature = 0.5,
             strength = 'medium',
             multiRound = null,
-            thinkingMode = false
+            thinkingMode = false,
+            thinkingBudget = 0
         } = options;
 
         // 验证输入
@@ -163,11 +164,11 @@ export class ApiService {
         // 根据提供商选择不同的调用方法
         switch (this.currentProvider) {
             case 'gemini':
-                return await this.callGemini(originalPrompt, systemInstruction, model, temperature, thinkingMode);
+                return await this.callGemini(originalPrompt, systemInstruction, model, temperature, thinkingBudget);
             case 'openai':
-                return await this.callOpenAI(originalPrompt, systemInstruction, model, temperature, thinkingMode);
+                return await this.callOpenAI(originalPrompt, systemInstruction, model, temperature);
             case 'anthropic':
-                return await this.callAnthropic(originalPrompt, systemInstruction, model, temperature, thinkingMode);
+                return await this.callAnthropic(originalPrompt, systemInstruction, model, temperature);
             default:
                 throw new Error(`不支持的提供商: ${this.currentProvider}`);
         }
@@ -176,33 +177,24 @@ export class ApiService {
     /**
      * 调用 Gemini API
      */
-    async callGemini(originalPrompt, systemInstruction, model, temperature, thinkingMode = false) {
+    async callGemini(originalPrompt, systemInstruction, model, temperature, thinkingBudget = 0) {
         const apiKey = this.getCurrentApiKey();
         const fullPrompt = `${systemInstruction}\n\n原始用户提示词:\n"""\n${originalPrompt}\n"""\n\n优化后的提示词:`;
         
         const url = `${API_PROVIDERS.gemini.endpoint}/models/${model}:generateContent?key=${apiKey}`;
-        const payload = {
-            contents: [{ role: "user", parts: [{ text: fullPrompt }] }],
-            generationConfig: { 
-                temperature,
-                ...(thinkingMode && { 
-                    // 启用思考模式的配置
-                    candidateCount: 1,
-                    maxOutputTokens: 8192,
-                    topP: 0.95,
-                    topK: 64
-                })
-            }
-        };
-
-        // 如果是思考模式，添加系统指令来促进深度思考
-        if (thinkingMode) {
-            payload.systemInstruction = {
-                parts: [{
-                    text: "请深入分析和思考用户的提示词，从多个角度考虑优化方案。首先分析原提示词的目标、结构、潜在问题，然后提供一个经过深度思考的优化版本。"
-                }]
+        const generationConfig = { temperature };
+        
+        // 为Gemini 2.5 Flash添加思考模式配置
+        if (model === 'gemini-2.5-flash-preview-05-20') {
+            generationConfig.thinking_config = {
+                thinking_budget: thinkingBudget
             };
         }
+        
+        const payload = {
+            contents: [{ role: "user", parts: [{ text: fullPrompt }] }],
+            generationConfig
+        };
 
         return await this.callWithRetry(async () => {
             const response = await fetch(url, {
@@ -232,7 +224,7 @@ export class ApiService {
     /**
      * 调用 OpenAI API
      */
-    async callOpenAI(originalPrompt, systemInstruction, model, temperature, thinkingMode = false) {
+    async callOpenAI(originalPrompt, systemInstruction, model, temperature) {
         const apiKey = this.getCurrentApiKey();
         
         const url = `${API_PROVIDERS.openai.endpoint}/chat/completions`;
@@ -275,7 +267,7 @@ export class ApiService {
     /**
      * 调用 Anthropic API
      */
-    async callAnthropic(originalPrompt, systemInstruction, model, temperature, thinkingMode = false) {
+    async callAnthropic(originalPrompt, systemInstruction, model, temperature) {
         const apiKey = this.getCurrentApiKey();
         
         const url = `${API_PROVIDERS.anthropic.endpoint}/messages`;
