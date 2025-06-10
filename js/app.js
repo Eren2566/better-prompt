@@ -112,21 +112,21 @@ class BetterPromptApp {
     }
 
     /**
-     * 初始化应用状态
+     * 初始化状态
      */
     initializeState() {
         return {
             isOptimizing: false,
-            currentProvider: StorageManager.get('currentProvider', 'gemini'),
-            multiRoundSettings: StorageManager.get('multiRoundSettings', {
-                enabled: false,
+            currentProvider: 'gemini', // 总是使用gemini作为默认
+            multiRoundSettings: {
+                enabled: false, // 默认不开启多轮优化
                 rounds: 3,
                 depth: 'moderate'
-            }),
-            errorHandlingSettings: StorageManager.get('errorHandlingSettings', {
+            },
+            errorHandlingSettings: {
                 maxRetries: 3,
                 timeout: 30
-            })
+            }
         };
     }
 
@@ -139,6 +139,12 @@ class BetterPromptApp {
         this.initializeEventListeners();
         this.updateUI();
         this.loadSettings();
+        
+        // 确保默认设置正确
+        this.ensureDefaultSettings();
+        
+        // 更新默认模板按钮显示状态
+        this.updateDefaultTemplateButtonDisplay();
         
         // 设置焦点
         if (this.elements.originalPrompt) {
@@ -402,6 +408,9 @@ class BetterPromptApp {
         
         // 应用设置到API服务
         this.apiService.setConfig(this.state.errorHandlingSettings);
+        
+        // 更新模板按钮显示状态
+        this.updateDefaultTemplateButtonDisplay();
     }
 
     /**
@@ -512,16 +521,7 @@ class BetterPromptApp {
      * 更新模板按钮状态
      */
     updateTemplateButtons() {
-        const activeTemplate = this.templateManager.getActive();
-        
-        document.querySelectorAll('.template-tab-button').forEach(button => {
-            button.classList.remove('active');
-        });
-        
-        const activeButton = document.querySelector(`[data-template="${activeTemplate}"]`);
-        if (activeButton) {
-            activeButton.classList.add('active');
-        }
+        this.updateDefaultTemplateButtonDisplay();
     }
 
     /**
@@ -903,7 +903,7 @@ class BetterPromptApp {
         
         const templateName = button.dataset.template;
         this.templateManager.setActive(templateName);
-        this.updateTemplateButtons();
+        this.updateDefaultTemplateButtonDisplay();
     }
 
     /**
@@ -1197,6 +1197,12 @@ class BetterPromptApp {
      * 保存高级设置
      */
     saveAdvancedSettings() {
+        // 保存自定义指令
+        if (this.elements.customPrompt) {
+            const customPrompt = this.elements.customPrompt.value.trim();
+            this.templateManager.setCustomPrompt(customPrompt);
+        }
+        
         this.state.multiRoundSettings = {
             enabled: this.elements.enableMultiRound ? this.elements.enableMultiRound.checked : false,
             rounds: this.elements.roundCount ? parseInt(this.elements.roundCount.value) : 3,
@@ -1212,6 +1218,9 @@ class BetterPromptApp {
         StorageManager.set('errorHandlingSettings', this.state.errorHandlingSettings);
 
         this.apiService.setConfig(this.state.errorHandlingSettings);
+        
+        // 更新默认模板按钮显示状态
+        this.updateDefaultTemplateButtonDisplay();
         
         this.showToast('高级设置已保存');
         this.closeAdvancedSettings();
@@ -1232,6 +1241,10 @@ class BetterPromptApp {
         }
         
         this.templateManager.setCustomPrompt(customPrompt);
+        
+        // 更新默认模板按钮显示状态
+        this.updateDefaultTemplateButtonDisplay();
+        
         this.showToast('自定义优化指令已保存');
         
         if (validation.warnings.length > 0) {
@@ -1649,6 +1662,14 @@ class BetterPromptApp {
             return customPrompt || '尚未设置自定义模板。请在高级设置中配置自定义优化指令。';
         }
         
+        // 如果是默认模板，且有自定义指令，则显示自定义指令内容
+        if (templateName === 'default') {
+            const customPrompt = this.templateManager.getCustomPrompt();
+            if (customPrompt && customPrompt.trim() !== '') {
+                return customPrompt;
+            }
+        }
+        
         const templates = this.templateManager.prompts;
         return templates[templateName] || '';
     }
@@ -1720,6 +1741,98 @@ class BetterPromptApp {
         }
         
         return modelId;
+    }
+
+    /**
+     * 更新默认模板按钮显示状态
+     */
+    updateDefaultTemplateButtonDisplay() {
+        const activeTemplate = this.templateManager.getActive();
+        const hasCustomPrompt = this.templateManager.getCustomPrompt().trim() !== '';
+        
+        // 更新按钮激活状态
+        document.querySelectorAll('.template-tab-button').forEach(button => {
+            button.classList.remove('active');
+        });
+        
+        const activeButton = document.querySelector(`[data-template="${activeTemplate}"]`);
+        if (activeButton) {
+            activeButton.classList.add('active');
+        }
+        
+        // 更新默认优化按钮文字
+        const defaultButton = document.getElementById('defaultTemplateButton');
+        if (defaultButton) {
+            if (hasCustomPrompt) {
+                // 有自定义指令时，显示"自定义"
+                defaultButton.innerHTML = '<i class="fa-solid fa-circle-check"></i> 自定义';
+            } else {
+                // 没有自定义指令时，显示"默认优化"
+                defaultButton.innerHTML = '<i class="fa-solid fa-circle-check"></i> 默认优化';
+            }
+            // 移除title属性，让自定义tooltip系统处理悬停显示
+            defaultButton.removeAttribute('title');
+        }
+    }
+
+    /**
+     * 确保默认设置正确
+     */
+    ensureDefaultSettings() {
+        // 1. 确保API provider为gemini
+        this.state.currentProvider = 'gemini';
+        StorageManager.set('currentProvider', 'gemini');
+        this.apiService.setProvider('gemini');
+        
+        // 2. 确保模型选择器设置为Gemini 2.5 Flash
+        if (this.elements.modelSelect) {
+            this.elements.modelSelect.value = 'gemini-2.5-flash-preview-05-20';
+        }
+        
+        // 3. 确保高级设置里默认没有自定义指令
+        if (this.elements.customPrompt) {
+            this.elements.customPrompt.value = '';
+        }
+        this.templateManager.setCustomPrompt('');
+        
+        // 4. 确保默认不开启多轮优化
+        this.state.multiRoundSettings = {
+            enabled: false,
+            rounds: 3,
+            depth: 'moderate'
+        };
+        
+        this.state.errorHandlingSettings = {
+            maxRetries: 3,
+            timeout: 30
+        };
+        
+        // 5. 更新UI元素以反映默认设置
+        if (this.elements.enableMultiRound) {
+            this.elements.enableMultiRound.checked = false;
+        }
+        if (this.elements.roundCount) {
+            this.elements.roundCount.value = 3;
+        }
+        if (this.elements.optimizationDepth) {
+            this.elements.optimizationDepth.value = 'moderate';
+        }
+        if (this.elements.maxRetries) {
+            this.elements.maxRetries.value = 3;
+        }
+        if (this.elements.timeout) {
+            this.elements.timeout.value = 30;
+        }
+        
+        // 6. 保存默认设置到本地存储
+        StorageManager.set('multiRoundSettings', this.state.multiRoundSettings);
+        StorageManager.set('errorHandlingSettings', this.state.errorHandlingSettings);
+        
+        // 7. 应用设置到API服务
+        this.apiService.setConfig(this.state.errorHandlingSettings);
+        
+        // 8. 更新Provider UI
+        this.updateProviderUI();
     }
 }
 
