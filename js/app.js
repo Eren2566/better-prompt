@@ -140,13 +140,6 @@ class BetterPromptApp {
         this.updateUI();
         this.loadSettings();
         
-        // 初始化思考模式显示状态
-        if (this.elements.modelSelect) {
-            const currentModel = this.elements.modelSelect.value;
-            this.updateThinkingModeVisibility(currentModel);
-            this.restoreThinkingModeState(currentModel);
-        }
-        
         // 设置焦点
         if (this.elements.originalPrompt) {
             this.elements.originalPrompt.focus();
@@ -583,6 +576,13 @@ class BetterPromptApp {
         
         // 更新模型选择器
         this.updateModelOptions();
+        
+        // 更新思考模式可见性（关键修复）
+        if (this.elements.modelSelect) {
+            const currentModel = this.elements.modelSelect.value;
+            this.updateThinkingModeVisibility(currentModel);
+            this.restoreThinkingModeState(currentModel);
+        }
     }
 
     /**
@@ -607,6 +607,11 @@ class BetterPromptApp {
         if (models.length > 0) {
             this.elements.modelSelect.value = models[Math.min(1, models.length - 1)].id;
         }
+        
+        // 更新思考模式可见性（关键修复）
+        const currentModel = this.elements.modelSelect.value;
+        this.updateThinkingModeVisibility(currentModel);
+        this.restoreThinkingModeState(currentModel);
     }
 
     /**
