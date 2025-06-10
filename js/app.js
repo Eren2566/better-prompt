@@ -231,6 +231,9 @@ class BetterPromptApp {
         if (this.elements.modelSelect) {
             this.elements.modelSelect.addEventListener('change', () => this.updateModelSelection());
         }
+        if (this.elements.strengthSelect) {
+            this.elements.strengthSelect.addEventListener('change', () => this.updateStrengthSelection());
+        }
         if (this.elements.addCustomModelButton) {
             this.elements.addCustomModelButton.addEventListener('click', () => this.addCustomModel());
         }
@@ -880,7 +883,7 @@ class BetterPromptApp {
     /**
      * 显示通知
      */
-    showToast(message, isError = false) {
+    showToast(message, isError = false, duration = null) {
         if (!this.elements.toast || !this.elements.toastMessage) return;
         
         this.elements.toastMessage.textContent = message;
@@ -889,9 +892,10 @@ class BetterPromptApp {
         this.elements.toast.classList.add('visible');
         
         clearTimeout(this.toastTimeout);
+        const displayDuration = duration || (isError ? 4000 : 3000);
         this.toastTimeout = setTimeout(() => {
             this.elements.toast.classList.remove('visible');
-        }, isError ? 4000 : 3000);
+        }, displayDuration);
     }
 
     /**
@@ -1304,6 +1308,87 @@ class BetterPromptApp {
             // 恢复该模型的思考模式状态
             this.restoreThinkingModeState(selectedModel);
         }
+    }
+
+    /**
+     * 更新强度选择
+     */
+    updateStrengthSelection() {
+        if (this.elements.strengthSelect) {
+            const selectedStrength = this.elements.strengthSelect.value;
+            console.log('强度已切换到:', selectedStrength);
+            
+            // 显示强度说明（可选，作为toast提示）
+            const description = this.getStrengthDescription(selectedStrength);
+            this.showToast(description, false, 3000); // 显示3秒
+            
+            // 根据强度自动调整温度（可选功能）
+            const suggestedTemp = this.getSuggestedTemperature(selectedStrength);
+            if (this.elements.temperatureSlider && suggestedTemp) {
+                this.elements.temperatureSlider.value = suggestedTemp.recommended;
+                this.updateTemperatureDisplay();
+                
+                // 提示用户温度已调整
+                setTimeout(() => {
+                    this.showToast(`已为${this.getStrengthDisplayName(selectedStrength)}调整创造力为 ${this.getTemperatureDisplayName(suggestedTemp.recommended)}`, false, 2000);
+                }, 3200); // 在强度说明消失后显示
+            }
+        }
+    }
+
+    /**
+     * 获取强度说明
+     * @param {string} strength - 强度级别
+     * @returns {string} 强度说明
+     */
+    getStrengthDescription(strength) {
+        const descriptions = {
+            light: "轻柔模式：保持原始表达风格，仅做必要的语言润色和逻辑整理，不添加额外要求",
+            medium: "中等模式：在保持核心意图基础上适度重构，补充必要信息，平衡原意与效果提升",
+            strong: "深度模式：深度重构提示词结构，添加专业约束和最佳实践，大幅提升专业性"
+        };
+        return descriptions[strength] || descriptions.medium;
+    }
+
+    /**
+     * 根据强度获取建议的温度配置
+     * @param {string} strength - 强度级别
+     * @returns {Object} 温度配置对象
+     */
+    getSuggestedTemperature(strength) {
+        const suggestions = {
+            light: { min: 0.3, max: 0.6, recommended: 0.4 },    // 轻柔：较低温度，保持一致性
+            medium: { min: 0.4, max: 0.7, recommended: 0.5 },   // 中等：平衡温度
+            strong: { min: 0.5, max: 0.8, recommended: 0.6 }    // 深度：较高温度，增加创造性
+        };
+        return suggestions[strength] || suggestions.medium;
+    }
+
+    /**
+     * 获取强度显示名称
+     * @param {string} strength - 强度级别
+     * @returns {string} 显示名称
+     */
+    getStrengthDisplayName(strength) {
+        const names = {
+            light: "轻柔模式",
+            medium: "中等模式", 
+            strong: "深度模式"
+        };
+        return names[strength] || names.medium;
+    }
+
+    /**
+     * 获取温度显示名称
+     * @param {number} temperature - 温度值
+     * @returns {string} 显示名称
+     */
+    getTemperatureDisplayName(temperature) {
+        if (temperature <= 0.2) return '精确';
+        else if (temperature <= 0.4) return '较精确';
+        else if (temperature <= 0.6) return '平衡';
+        else if (temperature <= 0.8) return '较有创意';
+        else return '极富创意';
     }
 
     /**

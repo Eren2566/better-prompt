@@ -165,7 +165,7 @@ export class ApiService {
         // 构建系统指令
         let systemInstruction = template;
         if (strength) {
-            systemInstruction += `\n\n请根据 "${strength}" 强度进行优化。`;
+            systemInstruction += this.getStrengthInstruction(strength);
         }
         if (multiRound) {
             systemInstruction += `\n请进行 ${multiRound.rounds} 轮迭代优化，优化深度为 "${multiRound.depth}"。`;
@@ -400,5 +400,43 @@ export class ApiService {
      */
     supportsCustomModels() {
         return API_PROVIDERS[this.currentProvider]?.supportsCustomModels || false;
+    }
+
+    /**
+     * 获取优化强度对应的具体指令
+     * @param {string} strength - 强度级别
+     * @returns {string} 具体的优化指令
+     */
+    getStrengthInstruction(strength) {
+        const strengthMap = {
+            light: `
+
+【优化强度：轻柔模式】
+- 保持原始提示词的核心意图和主要结构
+- 仅进行必要的语言润色和逻辑梳理
+- 不添加额外的功能要求或约束条件
+- 保留用户的原始表达风格和语气
+- 优化幅度控制在20-30%以内`,
+
+            medium: `
+
+【优化强度：中等模式】
+- 在保持核心意图的基础上，适度重构提示词结构
+- 补充必要的上下文信息和约束条件
+- 优化语言表达的准确性和清晰度
+- 可以适当调整表达方式以提高效果
+- 优化幅度控制在40-60%`,
+
+            strong: `
+
+【优化强度：深度优化】
+- 可以大幅重构提示词的结构和表达方式
+- 主动添加最佳实践的约束条件和输出要求
+- 补充完整的角色定义、思维框架等元素
+- 根据任务类型添加相应的专业指导
+- 优化幅度可达70%以上，但需确保不偏离原始目标`
+        };
+        
+        return strengthMap[strength] || strengthMap.medium;
     }
 } 
