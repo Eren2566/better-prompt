@@ -1322,16 +1322,11 @@ class BetterPromptApp {
             const description = this.getStrengthDescription(selectedStrength);
             this.showToast(description, false, 3000); // 显示3秒
             
-            // 根据强度自动调整温度（可选功能）
+            // 根据强度自动调整温度（静默调整，不显示提示）
             const suggestedTemp = this.getSuggestedTemperature(selectedStrength);
             if (this.elements.temperatureSlider && suggestedTemp) {
                 this.elements.temperatureSlider.value = suggestedTemp.recommended;
                 this.updateTemperatureDisplay();
-                
-                // 提示用户温度已调整
-                setTimeout(() => {
-                    this.showToast(`已为${this.getStrengthDisplayName(selectedStrength)}调整创造力为 ${this.getTemperatureDisplayName(suggestedTemp.recommended)}`, false, 2000);
-                }, 3200); // 在强度说明消失后显示
             }
         }
     }
@@ -1357,9 +1352,9 @@ class BetterPromptApp {
      */
     getSuggestedTemperature(strength) {
         const suggestions = {
-            light: { min: 0.3, max: 0.6, recommended: 0.4 },    // 轻柔：较低温度，保持一致性
-            medium: { min: 0.4, max: 0.7, recommended: 0.5 },   // 中等：平衡温度
-            strong: { min: 0.5, max: 0.8, recommended: 0.6 }    // 深度：较高温度，增加创造性
+            light: { min: 0.1, max: 0.4, recommended: 0.2 },    // 轻柔：低温度，保持精确性
+            medium: { min: 0.3, max: 0.6, recommended: 0.4 },   // 中等：适中温度
+            strong: { min: 0.4, max: 0.8, recommended: 0.6 }    // 深度：较高温度，增加创造性
         };
         return suggestions[strength] || suggestions.medium;
     }
