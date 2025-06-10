@@ -83,6 +83,11 @@ Always respond in 中文。`
      * @returns {string} 模板内容
      */
     getActiveTemplateContent() {
+        // 如果当前选择的是默认模板，但是有自定义指令，则使用自定义指令
+        if (this.activeTemplate === 'default' && this.customPrompt && this.customPrompt.trim() !== '') {
+            return this.customPrompt;
+        }
+        
         if (this.activeTemplate === 'custom' && this.customPrompt) {
             return this.customPrompt;
         }
