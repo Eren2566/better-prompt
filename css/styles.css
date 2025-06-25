@@ -1,29 +1,132 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+SC:wght@400;500;700&display=swap');
 
-/* 基础样式 */
+/* ===== 基础样式升级 ===== */
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     font-family: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: linear-gradient(135deg, #ecfeff 0%, #f0fdfa 100%);
+    background-image: url('https://i.ibb.co/xtN61cRf/Comfy-UI-Output-4-1.png');
+    background-size: cover;
+    background-position: center;
     background-attachment: fixed;
     color: var(--text-dark);
     min-height: 100vh;
-    transition: background 0.5s ease, color 0.3s ease;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+    position: relative;
+    overflow-x: hidden;
 }
 
-/* 卡片设计 */
+/* Apple 风格渐变文字工具类 */
+.apple-gradient {
+    background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.emerald-gradient {
+    background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ===== 液态玻璃卡片系统 ===== */
+.liquid-glass-wrapper {
+    position: relative;
+    display: flex;
+    overflow: hidden;
+    padding: 0.6rem;
+    border-radius: 2rem;
+    cursor: pointer;
+    box-shadow: 0 6px 6px rgba(0, 0, 0, 0.2), 0 0 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+    backdrop-filter: blur(20px);
+}
+
+.liquid-glass-wrapper:hover {
+    padding: 0.8rem;
+    border-radius: 2.5rem;
+    transform: translateY(-3px);
+}
+
+.liquid-glass-effect {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    backdrop-filter: blur(20px);
+}
+
+.liquid-glass-tint {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: inherit;
+}
+
+.liquid-glass-shine {
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    box-shadow: inset 2px 2px 1px 0 rgba(255, 255, 255, 0.5), 
+                inset -1px -1px 1px 1px rgba(255, 255, 255, 0.3);
+    border-radius: inherit;
+}
+
+.liquid-glass-content {
+    position: relative;
+    z-index: 3;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+    width: 100%;
+}
+
+.liquid-glass-wrapper:hover .liquid-glass-content {
+    transform: scale(0.98);
+}
+
+/* ===== 升级版卡片设计 ===== */
 .card {
-    background: rgba(255, 255, 255, 0.96);
-    border-radius: 18px;
-    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08), 
-                0 2px 15px rgba(0, 0, 0, 0.03);
-    border: 1px solid rgba(198, 229, 229, 0.3);
-    transition: all 0.25s ease;
     position: relative;
     overflow: hidden;
+    padding: 0.6rem;
+    border-radius: 2rem;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.15), 
+                0 2px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    backdrop-filter: blur(20px);
+    border-radius: inherit;
+}
+
+.card::after {
+    content: '';
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: inherit;
+}
+
+.card > * {
+    position: relative;
+    z-index: 3;
 }
 
 .card:hover {
-    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.15);
+    padding: 0.8rem;
+    border-radius: 2.5rem;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.2);
     transform: translateY(-3px);
 }
 
@@ -33,77 +136,103 @@ body {
     border-image: linear-gradient(to right, var(--primary-gradient-start), var(--primary-gradient-end)) 1;
 }
 
-/* 按钮设计 */
+/* ===== 现代化按钮设计 ===== */
 .btn-primary {
-    background: linear-gradient(135deg, var(--primary-gradient-start) 0%, var(--primary-gradient-end) 100%);
+    background: linear-gradient(135deg, var(--primary-gradient-start, #10b981) 0%, var(--primary-gradient-end, #06b6d4) 100%);
     color: white; 
-    border-radius: 14px; 
+    border-radius: 1.5rem; 
     font-weight: 600;
     letter-spacing: 0.5px;
-    transition: all 0.3s ease; 
-    box-shadow: 0 4px 14px rgba(13, 148, 136, 0.35);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2); 
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.35);
     border: none; 
     position: relative; 
     overflow: hidden;
+    backdrop-filter: blur(10px);
 }
 
 .btn-primary:hover { 
-    transform: translateY(-2px); 
-    box-shadow: 0 6px 20px rgba(13, 148, 136, 0.4); 
+    transform: translateY(-3px); 
+    box-shadow: 0 12px 30px rgba(16, 185, 129, 0.45);
+    border-radius: 2rem;
 }
 
 .btn-primary:active { 
     transform: translateY(1px); 
-    box-shadow: 0 2px 8px rgba(13, 148, 136, 0.25); 
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); 
 }
 
 .btn-secondary {
-    background: rgba(255, 255, 255, 0.7); 
-    color: var(--primary-gradient-start); 
-    border: 1px solid var(--primary-gradient-start);
-    border-radius: 14px; 
+    background: rgba(255, 255, 255, 0.8); 
+    color: var(--primary-gradient-start, #10b981); 
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 1.5rem; 
     font-weight: 500; 
-    transition: all 0.3s ease;
-    backdrop-filter: blur(4px);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .btn-secondary:hover { 
-    background: var(--primary-gradient-start); 
-    color: white; 
+    background: rgba(16, 185, 129, 0.1); 
+    border-color: var(--primary-gradient-start, #10b981);
     transform: translateY(-2px); 
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    border-radius: 2rem;
 }
 
-/* 输入框样式 */
+/* ===== 现代化输入框 ===== */
 .input-field {
-    background: rgba(255, 255, 255, 0.85); 
-    border: 1px solid var(--border-light);
-    border-radius: 14px; 
-    transition: all 0.3s ease; 
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.03),
-                0 1px 0 rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.9); 
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 1.5rem; 
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2); 
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05),
+                inset 0 1px 3px rgba(0, 0, 0, 0.03);
     color: var(--text-dark);
-    backdrop-filter: blur(3px);
+    backdrop-filter: blur(10px);
 }
 
 .input-field:focus {
     outline: none; 
-    border-color: var(--primary-gradient-start);
-    box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15), 
-                inset 0 1px 3px rgba(0,0,0,0.05);
+    border-color: rgba(16, 185, 129, 0.6);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15), 
+                0 8px 25px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 2rem;
 }
 
-/* 模板选项卡样式 */
+/* ===== 液态玻璃菜单项 ===== */
+.menu-item {
+    padding: 0.6rem 1rem;
+    border-radius: 1rem;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.menu-item:hover {
+    background: rgba(255, 255, 255, 0.6);
+    box-shadow: inset -2px -2px 4px rgba(0, 0, 0, 0.1),
+                0 4px 15px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(15px);
+    transform: translateY(-1px);
+    border-radius: 1.25rem;
+}
+
+/* ===== 模板选项卡升级 ===== */
 .template-tab-button {
-    transition: all 0.25s ease; 
-    border-radius: 14px; 
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2); 
+    border-radius: 1.5rem; 
     font-weight: 500;
     position: relative; 
     overflow: hidden; 
     z-index: 1;
-    color: var(--primary-gradient-start);
-    border: 1px solid rgba(13, 148, 136, 0.3);
-    background-color: rgba(255,255,255,0.5);
+    color: var(--primary-gradient-start, #10b981);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 }
 
 .template-tab-button::after {
@@ -113,17 +242,18 @@ body {
     left: 0; 
     width: 100%; 
     height: 100%;
-    background: linear-gradient(135deg, var(--primary-gradient-start) 0%, var(--primary-gradient-end) 100%);
+    background: linear-gradient(135deg, var(--primary-gradient-start, #10b981) 0%, var(--primary-gradient-end, #06b6d4) 100%);
     z-index: -1; 
     opacity: 0; 
-    transition: all 0.25s ease; 
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2); 
     border-radius: inherit; 
 }
 
 .template-tab-button.active { 
     color: white; 
     border-color: transparent; 
-    box-shadow: 0 4px 10px rgba(13, 148, 136, 0.25);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+    transform: translateY(-2px);
 }
 
 .template-tab-button.active::after { 
@@ -131,9 +261,11 @@ body {
 }
 
 .template-tab-button:not(.active):hover {
-    background-color: rgba(13, 148, 136, 0.08);
-    border-color: var(--primary-gradient-start);
-    transform: translateY(-1px);
+    background: rgba(16, 185, 129, 0.1);
+    border-color: var(--primary-gradient-start, #10b981);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    border-radius: 2rem;
 }
 
 /* 优化结果统计面板 */
@@ -182,28 +314,86 @@ body {
     right: -120px; 
 }
 
-/* 主题切换按钮 */
+/* ===== 深色模式适配 ===== */
+.dark-mode .liquid-glass-tint {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .liquid-glass-shine {
+    box-shadow: inset 2px 2px 1px 0 rgba(255, 255, 255, 0.2), 
+                inset -1px -1px 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .card::after {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .input-field {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.dark-mode .input-field:focus {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(16, 185, 129, 0.8);
+}
+
+.dark-mode .btn-secondary {
+    background: rgba(255, 255, 255, 0.2);
+    color: #4facfe;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dark-mode .btn-secondary:hover {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: #4facfe;
+}
+
+.dark-mode .template-tab-button {
+    background: rgba(255, 255, 255, 0.15);
+    color: #4facfe;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dark-mode .template-tab-button:not(.active):hover {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: #4facfe;
+}
+
+.dark-mode .menu-item {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .menu-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* ===== 主题切换按钮升级 ===== */
 .theme-toggle {
     position: fixed; 
-    top: 1.25rem; 
-    right: 1.25rem; 
-    width: 3.25rem; 
-    height: 3.25rem;
-    border-radius: 50%;
+    top: 1.5rem; 
+    right: 1.5rem; 
+    width: 3.5rem; 
+    height: 3.5rem;
+    border-radius: 1.75rem;
     display: flex; 
     align-items: center; 
     justify-content: center; 
     cursor: pointer;
-    background: var(--card-bg); 
-    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-    transition: all 0.3s ease; 
-    z-index: 100; 
-    border: 1px solid rgba(180, 230, 230, 0.4);
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2); 
+    z-index: 100;
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .theme-toggle:hover { 
     transform: translateY(-3px) scale(1.08); 
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15); 
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+    border-radius: 2rem;
+    background: rgba(255, 255, 255, 0.3);
 }
 
 .theme-toggle i { 

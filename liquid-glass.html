@@ -1,0 +1,287 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WWDC 2025 – Bento Grid Showcase</title>
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+  <!-- TailwindCSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css" />
+  <!-- Apache ECharts -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.6.0/dist/echarts.min.js"></script>
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+    body {
+      @apply text-white antialiased;
+      font-family: 'Inter', sans-serif;
+      background-image: url('https://i.ibb.co/xtN61cRf/Comfy-UI-Output-4-1.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
+    /* Gradient text utility */
+    .apple-gradient {
+      background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    /* Liquid Glass Card */
+    .liquidGlass-wrapper {
+      position: relative;
+      display: flex;
+      overflow: hidden;
+      padding: 0.6rem;
+      border-radius: 2rem;
+      cursor: pointer;
+      box-shadow: 0 6px 6px rgba(0, 0, 0, 0.2), 0 0 20px rgba(0, 0, 0, 0.1);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+    }
+    .liquidGlass-wrapper:hover {
+      padding: 0.8rem;
+      border-radius: 2.5rem;
+    }
+    .liquidGlass-effect {
+      position: absolute;
+      z-index: 0;
+      inset: 0;
+      backdrop-filter: blur(3px);
+      filter: url(#glass-distortion);
+    }
+    .liquidGlass-tint {
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.25);
+    }
+    .liquidGlass-shine {
+      position: absolute;
+      z-index: 2;
+      inset: 0;
+      box-shadow: inset 2px 2px 1px 0 rgba(255, 255, 255, 0.5), inset -1px -1px 1px 1px rgba(255, 255, 255, 0.5);
+    }
+    .liquidGlass-text {
+      position: relative;
+      z-index: 3;
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+    }
+    .liquidGlass-wrapper:hover .liquidGlass-text {
+      transform: scale(0.95);
+    }
+    .menu-item {
+      padding: 0.4rem 0.6rem;
+      border-radius: 0.8rem;
+      transition: all 0.1s ease-in;
+    }
+    .menu-item:hover {
+      background-color: rgba(255, 255, 255, 0.5);
+      box-shadow: inset -2px -2px 2px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(2px);
+    }
+
+    /* SVG filter for glass distortion */
+    svg#filters {
+      position: absolute;
+      width: 0;
+      height: 0;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center py-20">
+  <!-- SVG Filter Definitions -->
+  <svg id="filters">
+    <filter id="glass-distortion">
+      <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="3" result="noise" />
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="10" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+  </svg>
+
+  <main class="w-full max-w-screen-2xl px-2 sm:px-6 lg:px-8">
+    <div class="grid gap-4 md:gap-6 lg:gap-8 grid-cols-12 auto-rows-[minmax(120px,_auto)]">
+
+      <!-- Apple Intelligence (Hero Card) -->
+      <section class="liquidGlass-wrapper col-span-12 md:col-span-8 row-span-2">
+        <div class="liquidGlass-effect"></div>
+        <div class="liquidGlass-tint"></div>
+        <div class="liquidGlass-shine"></div>
+        <div class="liquidGlass-text flex flex-col justify-between p-6">
+          <div>
+            <h1 class="text-7xl md:text-8xl lg:text-9xl font-black tracking-tight leading-none apple-gradient">Apple Intelligence</h1>
+            <p class="text-lg md:text-xl mt-4 font-medium">跨平台 <span class="font-bold">AI</span> 生态，赋能所有设备</p>
+          </div>
+          <ul class="flex flex-wrap gap-2 mt-6">
+            <li class="menu-item">On‑device CoreML</li>
+            <li class="menu-item">Private Cloud Compute</li>
+            <li class="menu-item">Generative UI</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- iOS 19 -->
+      <section class="liquidGlass-wrapper col-span-6 md:col-span-4 row-span-1">
+        <div class="liquidGlass-effect"></div>
+        <div class="liquidGlass-tint"></div>
+        <div class="liquidGlass-shine"></div>
+        <div class="liquidGlass-text p-4 flex flex-col justify-between">
+          <div>
+            <h2 class="text-3xl lg:text-4xl font-extrabold">iOS 19</h2>
+            <p class="text-sm mt-1">Adaptive UI + Live Stories</p>
+          </div>
+          <div class="text-6xl font-black">99%<span class="text-base font-medium align-top ml-1">升级率</span></div>
+        </div>
+      </section>
+
+      <!-- macOS Redwood -->
+      <section class="liquidGlass-wrapper col-span-6 md:col-span-4 row-span-1">
+        <div class="liquidGlass-effect"></div>
+        <div class="liquidGlass-tint"></div>
+        <div class="liquidGlass-shine"></div>
+        <div class="liquidGlass-text p-4 flex flex-col justify-between">
+          <div>
+            <h2 class="text-3xl lg:text-4xl font-extrabold">macOS Redwood</h2>
+            <p class="text-sm mt-1">Unified Desktop Experience</p>
+          </div>
+          <div class="text-5xl font-black">M4<br><span class="text-base font-medium">Ready</span></div>
+        </div>
+      </section>
+
+      <!-- visionOS 2 -->
+      <section class="liquidGlass-wrapper col-span-6 md:col-span-4 row-span-1">
+        <div class="liquidGlass-effect"></div>
+        <div class="liquidGlass-tint"></div>
+        <div class="liquidGlass-shine"></div>
+        <div class="liquidGlass-text p-4 flex flex-col justify-between">
+          <div>
+            <h2 class="text-3xl lg:text-4xl font-extrabold">visionOS 2</h2>
+            <p class="text-sm mt-1">Spatial Multitasking 2.0</p>
+          </div>
+          <i class="fas fa-vr-cardboard text-4xl"></i>
+        </div>
+      </section>
+
+      <!-- watchOS 12 -->
+      <section class="liquidGlass-wrapper col-span-6 md:col-span-3 row-span-1">
+        <div class="liquidGlass-effect"></div>
+        <div class="liquidGlass-tint"></div>
+        <div class="liquidGlass-shine"></div>
+        <div class="liquidGlass-text p-4 flex flex-col justify-between">
+          <div>
+            <h2 class="text-2xl lg:text-3xl font-extrabold">watchOS 12</h2>
+            <p class="text-xs mt-1">StressSense &amp; SleepCoach</p>
+          </div>
+          <i class="fas fa-heartbeat text-3xl"></i>
+        </div>
+      </section>
+
+      <!-- M4 Ultra Chip -->
+      <section class="liquidGlass-wrapper col-span-6 md:col-span-3 row-span-1">
+        <div class="liquidGlass-effect"></div>
+        <div class="liquidGlass-tint"></div>
+        <div class="liquidGlass-shine"></div>
+        <div class="liquidGlass-text p-4 flex flex-col justify-between">
+          <div>
+            <h2 class="text-2xl lg:text-3xl font-extrabold">M4 Ultra</h2>
+            <p class="text-xs mt-1">48‑core CPU | 128‑core GPU</p>
+          </div>
+          <div class="text-4xl font-black">3nm+</div>
+        </div>
+      </section>
+
+      <!-- Xcode 17 & Swift 7 -->
+      <section class="liquidGlass-wrapper col-span-12 md:col-span-6 row-span-1">
+        <div class="liquidGlass-effect"></div>
+        <div class="liquidGlass-tint"></div>
+        <div class="liquidGlass-shine"></div>
+        <div class="liquidGlass-text p-6 flex flex-col md:flex-row items-start md:items-center justify-between">
+          <div>
+            <h2 class="text-3xl lg:text-4xl font-extrabold">Xcode 17 <span class="text-xl font-medium">+ Swift 7</span></h2>
+            <p class="text-xs mt-1">AI‑powered Code Completion</p>
+          </div>
+          <div class="flex items-center gap-2 mt-4 md:mt-0">
+            <i class="fas fa-code text-3xl"></i>
+            <span class="text-5xl font-black">10×</span>
+            <span class="text-base">Faster Build</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Adoption Chart -->
+      <section class="liquidGlass-wrapper col-span-12 md:col-span-6 row-span-1">
+        <div class="liquidGlass-effect"></div>
+        <div class="liquidGlass-tint"></div>
+        <div class="liquidGlass-shine"></div>
+        <div class="liquidGlass-text p-4">
+          <h2 class="text-2xl lg:text-3xl font-extrabold mb-2">Platform Adoption</h2>
+          <div id="chart" class="w-full h-56"></div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ECharts initialization -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const chartDom = document.getElementById('chart');
+      if (chartDom) {
+        const myChart = echarts.init(chartDom, null, { renderer: 'svg' });
+        const option = {
+          textStyle: {
+            color: '#fff'
+          },
+          grid: {
+            left: '2%',
+            right: '2%',
+            top: '10%',
+            bottom: '5%',
+            containLabel: true
+          },
+          xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: ['2021', '2022', '2023', '2024', '2025']
+          },
+          yAxis: {
+            type: 'value',
+            axisLabel: {
+              formatter: '{value}%'
+            }
+          },
+          series: [
+            {
+              name: 'iOS',
+              type: 'line',
+              smooth: true,
+              lineStyle: { width: 3 },
+              areaStyle: {
+                opacity: 0.2
+              },
+              data: [80, 85, 88, 92, 99]
+            },
+            {
+              name: 'macOS',
+              type: 'line',
+              smooth: true,
+              lineStyle: { width: 3 },
+              areaStyle: {
+                opacity: 0.2
+              },
+              data: [70, 74, 79, 83, 90]
+            }
+          ],
+          tooltip: {
+            trigger: 'axis'
+          }
+        };
+        myChart.setOption(option);
+        window.addEventListener('resize', myChart.resize);
+      }
+    });
+  </script>
+</body>
+</html>

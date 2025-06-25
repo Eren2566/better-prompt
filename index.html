@@ -4,12 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Better Prompt - 增强版Prompt优化器</title>
+    <!-- TailwindCSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/themes.css">
+    <style>
+        /* SVG 滤镜用于液态玻璃效果 */
+        svg#liquid-filters {
+            position: absolute;
+            width: 0;
+            height: 0;
+        }
+    </style>
 </head>
-<body>
+<body class="min-h-screen antialiased">
+    <!-- SVG 滤镜定义 -->
+    <svg id="liquid-filters">
+        <filter id="glass-distortion">
+            <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="3" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="10" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+    </svg>
     <div class="decorative-element blob-1"></div>
     <div class="decorative-element blob-2"></div>
 
@@ -19,21 +38,25 @@
 
     <div class="container mx-auto max-w-6xl w-full px-4 py-8 z-10">
         <header class="text-center mb-10 md:mb-12 pt-12 md:pt-6">
-            <h1 class="text-4xl md:text-5xl font-bold tracking-tight">
-                <span class="bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-600">
+            <h1 class="text-5xl md:text-6xl lg:text-7xl font-black tracking-tight leading-none">
+                <span class="apple-gradient">
                     Better Prompt
                 </span>
-                <sup class="text-xs bg-emerald-500 text-white rounded-full px-2 py-1 ml-2 align-super">增强版</sup>
+                <sup class="text-xs bg-gradient-to-r from-emerald-500 to-cyan-500 text-white rounded-full px-3 py-1.5 ml-3 align-super font-medium">增强版</sup>
             </h1>
-            <div class="divider w-28 md:w-36 mx-auto mt-3 mb-4"></div>
-            <p class="text-base md:text-lg text-medium-gray mt-0 max-w-2xl mx-auto">
-                专业提示词优化工具 - 利用先进AI模型提升提示效果，支持多轮优化与历史版本管理
+            <div class="divider w-32 md:w-40 mx-auto mt-4 mb-6"></div>
+            <p class="text-lg md:text-xl text-white/80 mt-0 max-w-3xl mx-auto font-medium">
+                专业提示词优化工具 - 利用先进 <span class="font-bold emerald-gradient">AI</span> 模型提升提示效果，支持多轮优化与历史版本管理
             </p>
         </header>
 
-        <main class="flex flex-col lg:flex-row lg:gap-6 gap-y-6">
+        <main class="flex flex-col lg:flex-row lg:gap-8 gap-y-8">
             <!-- 左侧输入区域 -->
-            <div class="lg:w-1/2 w-full card p-6 md:p-8 space-y-6">
+            <div class="lg:w-1/2 w-full liquid-glass-wrapper">
+                <div class="liquid-glass-effect"></div>
+                <div class="liquid-glass-tint"></div>
+                <div class="liquid-glass-shine"></div>
+                <div class="liquid-glass-content p-6 md:p-8 space-y-6">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
                         <div class="bg-gradient-to-tl from-cyan-500 to-teal-500 rounded-xl p-2.5 flex items-center justify-center mr-3 shadow-md">
@@ -204,10 +227,15 @@
                         <i class="fa-solid fa-repeat mr-2"></i> <span class="hidden lg:inline">再次优化</span>
                     </button>
                 </div>
+                </div>
             </div>
 
             <!-- 右侧结果区域 -->
-            <div class="lg:w-1/2 w-full card p-6 md:p-8">
+            <div class="lg:w-1/2 w-full liquid-glass-wrapper">
+                <div class="liquid-glass-effect"></div>
+                <div class="liquid-glass-tint"></div>
+                <div class="liquid-glass-shine"></div>
+                <div class="liquid-glass-content p-6 md:p-8">
                 <div class="optimized-container">
                     <div class="optimized-header">
                         <div class="flex items-center">
@@ -250,6 +278,7 @@
                             </button>
                         </div>
                     </div>
+                </div>
                 </div>
             </div>
         </main>

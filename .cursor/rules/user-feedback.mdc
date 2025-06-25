@@ -1,0 +1,43 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: 带用户反馈的交互式任务循环
+globs:
+alwaysApply:true
+---
+
+### ✅ Task: Interactive Task Loop with User Feedback
+
+1.**Checkif`userinput.py`exists**intherootdirectory.
+
+    *Ifitdoesn'texist,create it with the following content:
+
+    ```python
+    # userinput.py
+    user_input=input("prompt:")
+    ```
+
+2. **Main Workflow**:
+
+    * Perform your assigned tasks.
+
+    * Run:
+
+    ```bash
+    python userinput.py
+    ```
+    * The terminal should be opened in the chat window itself.
+    
+    * Read the user's input.
+
+    * Based on the input, perform the next set of tasks.
+
+    * Repeat the process.
+
+3. **Exit Condition**:
+
+
+    * If the user enters `"stop"`whenprompted,exittheloopandterminatethe process.
