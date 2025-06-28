@@ -135,7 +135,10 @@ class PluginSettingsManager {
             // 快捷键相关
             triggerKeySelect: document.getElementById('triggerKeySelect'),
             triggerDescription: document.getElementById('triggerDescription'),
-            triggerKeyHint: document.getElementById('triggerKeyHint')
+            triggerKeyHint: document.getElementById('triggerKeyHint'),
+            
+            // 跳转按钮
+            openWebAppBtn: document.getElementById('openWebAppBtn')
         };
     }
 
@@ -178,6 +181,27 @@ class PluginSettingsManager {
             this.updateTriggerDescription();
             this.saveSettings();
         });
+        
+        // 跳转到完整版应用
+        this.elements.openWebAppBtn?.addEventListener('click', () => {
+            this.openWebApplication();
+        });
+    }
+    
+    // 打开完整版Web应用
+    openWebApplication() {
+        // 完整版Web应用的部署URL
+        // 🚨 部署后请将此URL替换为您的实际Vercel部署地址
+        const webAppUrl = 'https://your-better-prompt.vercel.app';
+        
+        // 在新标签页中打开完整版应用
+        chrome.tabs.create({
+            url: webAppUrl,
+            active: true
+        });
+        
+        // 关闭当前popup
+        window.close();
     }
 
     // 基于app.js的模板选择处理

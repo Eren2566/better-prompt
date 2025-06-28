@@ -5,7 +5,8 @@
   "description": "专业提示词优化工具 - 三击空格自动优化提示词",
   "permissions": [
     "storage",
-    "activeTab"
+    "activeTab",
+    "tabs"
   ],
   "host_permissions": [
     "https://generativelanguage.googleapis.com/*"
@@ -28,7 +29,12 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["assets/*", "css/*"],
+      "resources": [
+        "index.html",
+        "assets/*", 
+        "css/*", 
+        "js/*"
+      ],
       "matches": ["<all_urls>"]
     }
   ]
