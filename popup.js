@@ -106,7 +106,8 @@ class PluginSettingsManager {
             strength: 'medium',
             temperature: 0.5,
             thinkingMode: false,
-            thinkingBudget: 8000
+            thinkingBudget: 8000,
+            triggerKey: 'space3'
         };
         
         this.init();
@@ -129,7 +130,12 @@ class PluginSettingsManager {
             thinkingModeToggle: document.getElementById('thinkingModeToggle'),
             thinkingDepthContainer: document.getElementById('thinkingDepthContainer'),
             thinkingBudgetSlider: document.getElementById('thinkingBudgetSlider'),
-            thinkingBudgetValue: document.getElementById('thinkingBudgetValue')
+            thinkingBudgetValue: document.getElementById('thinkingBudgetValue'),
+            
+            // 快捷键相关
+            triggerKeySelect: document.getElementById('triggerKeySelect'),
+            triggerDescription: document.getElementById('triggerDescription'),
+            triggerKeyHint: document.getElementById('triggerKeyHint')
         };
     }
 
@@ -166,6 +172,12 @@ class PluginSettingsManager {
             this.updateThinkingBudgetDisplay();
             this.saveSettings();
         });
+        
+        // 快捷键选择
+        this.elements.triggerKeySelect?.addEventListener('change', () => {
+            this.updateTriggerDescription();
+            this.saveSettings();
+        });
     }
 
     // 基于app.js的模板选择处理
@@ -195,6 +207,38 @@ class PluginSettingsManager {
         const value = this.elements.thinkingBudgetSlider?.value || 0;
         if (this.elements.thinkingBudgetValue) {
             this.elements.thinkingBudgetValue.textContent = value;
+        }
+    }
+
+    // 更新快捷键描述
+    updateTriggerDescription() {
+        const triggerKey = this.elements.triggerKeySelect?.value || 'space3';
+        const descriptions = {
+            'space3': '在输入框中连击三下空格键即可触发提示词优化',
+            'enter3': '在输入框中连击三下回车键即可触发提示词优化',
+            'tab3': '在输入框中连击三下Tab键即可触发提示词优化',
+            'semicolon3': '在输入框中连击三下分号键(;)即可触发提示词优化',
+            'ctrl+space': '在输入框中按下Ctrl+空格键即可触发提示词优化',
+            'alt+space': '在输入框中按下Alt+空格键即可触发提示词优化',
+            'ctrl+enter': '在输入框中按下Ctrl+回车键即可触发提示词优化'
+        };
+        
+        const hints = {
+            'space3': '连击三下空格键',
+            'enter3': '连击三下回车键',
+            'tab3': '连击三下Tab键',
+            'semicolon3': '连击三下分号键(;)',
+            'ctrl+space': '按Ctrl+空格键',
+            'alt+space': '按Alt+空格键',
+            'ctrl+enter': '按Ctrl+回车键'
+        };
+        
+        if (this.elements.triggerDescription) {
+            this.elements.triggerDescription.textContent = descriptions[triggerKey] || descriptions['space3'];
+        }
+        
+        if (this.elements.triggerKeyHint) {
+            this.elements.triggerKeyHint.textContent = hints[triggerKey] || hints['space3'];
         }
     }
 
@@ -241,6 +285,7 @@ class PluginSettingsManager {
             this.settings.temperature = await ExtensionStorageManager.get('temperature', 0.5);
             this.settings.thinkingMode = await ExtensionStorageManager.get('thinkingMode', false);
             this.settings.thinkingBudget = await ExtensionStorageManager.get('thinkingBudget', 8000);
+            this.settings.triggerKey = await ExtensionStorageManager.get('triggerKey', 'space3');
             
             // 加载模板设置
             await this.templateManager.loadFromStorage();
@@ -257,12 +302,14 @@ class PluginSettingsManager {
             this.settings.strength = this.elements.strengthSelect?.value || this.settings.strength;
             this.settings.thinkingMode = this.elements.thinkingModeToggle?.checked || false;
             this.settings.thinkingBudget = parseInt(this.elements.thinkingBudgetSlider?.value) || 8000;
+            this.settings.triggerKey = this.elements.triggerKeySelect?.value || this.settings.triggerKey;
             
             // 保存到存储 - 使用与app.js相同的键名
             await ExtensionStorageManager.set('selectedModel', this.settings.model);
             await ExtensionStorageManager.set('optimizationStrength', this.settings.strength);
             await ExtensionStorageManager.set('thinkingMode', this.settings.thinkingMode);
             await ExtensionStorageManager.set('thinkingBudget', this.settings.thinkingBudget);
+            await ExtensionStorageManager.set('triggerKey', this.settings.triggerKey);
             
             // 保存模板设置
             await this.templateManager.saveToStorage();
@@ -302,12 +349,20 @@ class PluginSettingsManager {
             this.elements.thinkingBudgetSlider.value = this.settings.thinkingBudget;
         }
         
+        // 更新快捷键选择
+        if (this.elements.triggerKeySelect) {
+            this.elements.triggerKeySelect.value = this.settings.triggerKey;
+        }
+        
         // 更新模板按钮状态
         this.updateTemplateButtons();
         
         // 更新思考模式相关UI
         this.updateThinkingDepthVisibility();
         this.updateThinkingBudgetDisplay();
+        
+        // 更新快捷键描述
+        this.updateTriggerDescription();
     }
 
     updateTemplateButtons() {
@@ -354,6 +409,7 @@ class PluginSettingsManager {
             temperature: this.settings.temperature,
             thinkingMode: this.settings.thinkingMode,
             thinkingBudget: this.settings.thinkingBudget,
+            triggerKey: this.settings.triggerKey,
             template: this.templateManager.getActiveTemplateContent()
         };
     }

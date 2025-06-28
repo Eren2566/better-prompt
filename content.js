@@ -6,10 +6,11 @@
  */
 class BetterPromptContentScript {
     constructor() {
-        this.spaceClickCount = 0;
-        this.spaceClickTimer = null;
+        this.keyClickCount = 0;
+        this.keyClickTimer = null;
         this.isOptimizing = false;
         this.activeElement = null;
+        this.triggerKey = 'space3'; // 默认触发键
         
         // 三击检测的时间窗口（毫秒）
         this.clickTimeWindow = 800;
@@ -25,10 +26,14 @@ class BetterPromptContentScript {
     addEventListeners() {
         // 监听键盘事件
         document.addEventListener('keydown', (e) => this.handleKeyDown(e), true);
+        document.addEventListener('keyup', (e) => this.handleKeyUp(e), true);
         
         // 监听焦点变化，记录当前活跃的输入元素
         document.addEventListener('focusin', (e) => this.handleFocusIn(e), true);
         document.addEventListener('focusout', (e) => this.handleFocusOut(e), true);
+        
+        // 初始化时获取用户设置的触发键
+        this.loadTriggerSettings();
     }
 
     handleFocusIn(e) {
@@ -48,47 +53,86 @@ class BetterPromptContentScript {
     }
 
     handleKeyDown(e) {
-        // 只处理空格键
-        if (e.code !== 'Space') {
-            this.resetSpaceClickCount();
-            return;
-        }
-
         const element = e.target;
         
         // 检查是否在可编辑的输入元素中
         if (!this.isInputElement(element)) {
-            this.resetSpaceClickCount();
+            this.resetKeyClickCount();
             return;
         }
 
-        // 增加空格点击计数
-        this.spaceClickCount++;
+        // 检查是否匹配当前设置的触发键
+        if (this.checkTriggerKey(e)) {
+            this.processTriggerEvent(e, element);
+        } else {
+            this.resetKeyClickCount();
+        }
+    }
+
+    handleKeyUp(e) {
+        // 某些快捷键可能需要在keyup时处理
+    }
+
+    checkTriggerKey(e) {
+        const triggerKey = this.triggerKey;
+        
+        switch (triggerKey) {
+            case 'space3':
+                return e.code === 'Space' && !e.ctrlKey && !e.altKey && !e.shiftKey;
+            case 'enter3':
+                return e.code === 'Enter' && !e.ctrlKey && !e.altKey && !e.shiftKey;
+            case 'tab3':
+                return e.code === 'Tab' && !e.ctrlKey && !e.altKey && !e.shiftKey;
+            case 'semicolon3':
+                return e.code === 'Semicolon' && !e.ctrlKey && !e.altKey && !e.shiftKey;
+            case 'ctrl+space':
+                return e.code === 'Space' && e.ctrlKey && !e.altKey;
+            case 'alt+space':
+                return e.code === 'Space' && !e.ctrlKey && e.altKey;
+            case 'ctrl+enter':
+                return e.code === 'Enter' && e.ctrlKey && !e.altKey;
+            default:
+                return e.code === 'Space' && !e.ctrlKey && !e.altKey && !e.shiftKey;
+        }
+    }
+
+    processTriggerEvent(e, element) {
+        const triggerKey = this.triggerKey;
+        
+        // 对于组合键，直接触发
+        if (triggerKey.includes('+')) {
+            e.preventDefault();
+            this.handleOptimizationTrigger(element);
+            return;
+        }
+        
+        // 对于三击类型的键，计数处理
+        this.keyClickCount++;
         
         // 重置计时器
-        if (this.spaceClickTimer) {
-            clearTimeout(this.spaceClickTimer);
+        if (this.keyClickTimer) {
+            clearTimeout(this.keyClickTimer);
         }
 
         // 检查是否达到三击
-        if (this.spaceClickCount >= 3) {
-            e.preventDefault(); // 阻止默认的空格输入
-            this.handleTripleSpaceClick(element);
-            this.resetSpaceClickCount();
+        if (this.keyClickCount >= 3) {
+            e.preventDefault(); // 阻止默认行为
+            this.handleOptimizationTrigger(element);
+            this.resetKeyClickCount();
             return;
         }
 
         // 设置重置计时器
-        this.spaceClickTimer = setTimeout(() => {
-            this.resetSpaceClickCount();
+        this.keyClickTimer = setTimeout(() => {
+            this.resetKeyClickCount();
         }, this.clickTimeWindow);
     }
 
-    resetSpaceClickCount() {
-        this.spaceClickCount = 0;
-        if (this.spaceClickTimer) {
-            clearTimeout(this.spaceClickTimer);
-            this.spaceClickTimer = null;
+    resetKeyClickCount() {
+        this.keyClickCount = 0;
+        if (this.keyClickTimer) {
+            clearTimeout(this.keyClickTimer);
+            this.keyClickTimer = null;
         }
     }
 
@@ -123,7 +167,17 @@ class BetterPromptContentScript {
         });
     }
 
-    async handleTripleSpaceClick(element) {
+    async loadTriggerSettings() {
+        try {
+            const settings = await this.getExtensionSettings();
+            this.triggerKey = settings.triggerKey || 'space3';
+        } catch (error) {
+            console.warn('获取触发键设置失败，使用默认设置:', error);
+            this.triggerKey = 'space3';
+        }
+    }
+
+    async handleOptimizationTrigger(element) {
         if (this.isOptimizing) {
             console.log('正在优化中，请稍候...');
             return;
@@ -241,7 +295,8 @@ class BetterPromptContentScript {
                             strength: 'medium',
                             template: '',
                             thinkingMode: false,
-                            thinkingBudget: 8000
+                            thinkingBudget: 8000,
+                            triggerKey: 'space3'
                         });
                     }
                 }

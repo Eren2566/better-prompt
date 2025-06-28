@@ -499,10 +499,33 @@
             color: #64748b;
         }
         
-        /* Hidden sections */
-        .hidden {
-            display: none;
-        }
+                 /* Hidden sections */
+         .hidden {
+             display: none;
+         }
+         
+         /* Trigger Help */
+         .trigger-help {
+             display: flex;
+             align-items: flex-start;
+             gap: 10px;
+             background: #f0f9ff;
+             border: 1px solid #bae6fd;
+             border-radius: 8px;
+             padding: 12px;
+             margin-top: 8px;
+         }
+         
+         .trigger-help-icon {
+             font-size: 16px;
+             flex-shrink: 0;
+         }
+         
+         .trigger-help-text {
+             font-size: 12px;
+             line-height: 1.4;
+             color: #0369a1;
+         }
         
         /* Status Message */
         .status-message {
@@ -566,7 +589,7 @@
                     </div>
                     <div class="step">
                         <div class="step-number">2</div>
-                        <span><span class="highlight">连击三下空格键</span></span>
+                        <span><span class="highlight" id="triggerKeyHint">连击三下空格键</span></span>
                     </div>
                     <div class="step">
                         <div class="step-number">3</div>
@@ -675,6 +698,33 @@
                             <span>中等</span>
                             <span>深度</span>
                             <span>最大</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 触发快捷键设置 -->
+            <div class="settings-section">
+                <div class="section-title">
+                    <div class="section-icon">⌨️</div>
+                    触发快捷键
+                </div>
+                <div class="form-group">
+                    <select id="triggerKeySelect" class="select-field">
+                        <option value="space3">连击三下空格 (默认)</option>
+                        <option value="enter3">连击三下回车</option>
+                        <option value="tab3">连击三下Tab</option>
+                        <option value="semicolon3">连击三下分号 (;)</option>
+                        <option value="ctrl+space">Ctrl + 空格</option>
+                        <option value="alt+space">Alt + 空格</option>
+                        <option value="ctrl+enter">Ctrl + 回车</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <div class="trigger-help">
+                        <div class="trigger-help-icon">💡</div>
+                        <div class="trigger-help-text">
+                            <span id="triggerDescription">在输入框中连击三下空格键即可触发提示词优化</span>
                         </div>
                     </div>
                 </div>
