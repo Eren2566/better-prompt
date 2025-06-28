@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Better Prompt - 插件设置</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { 
+            width: 380px; 
+            min-height: 500px; 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .setting-item {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        .input-field {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+        }
+        .input-field:focus {
+            outline: none;
+            ring: 2px;
+            ring-color: #3b82f6;
+        }
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: #1d4ed8;
+        }
+        .template-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+            color: #6b7280;
+            cursor: pointer;
+        }
+        .template-btn:hover {
+            background-color: #f3f4f6;
+        }
+        .template-btn.active {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+            color: #1d4ed8;
+        }
+        .template-btn i {
+            margin-bottom: 0.25rem;
+        }
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 4px;
+        }
+        .status-connected { background-color: #10b981; }
+        .status-disconnected { background-color: #ef4444; }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #667eea;
+        }
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+    </style>
+</head>
+<body class="bg-white">
+    <!-- Header -->
+    <div class="gradient-bg text-white p-4">
+        <div class="flex items-center">
+            <i class="fa-solid fa-sparkles text-xl mr-3"></i>
+            <div>
+                <h1 class="text-lg font-bold">Better Prompt</h1>
+                <p class="text-xs opacity-90">AI提示词优化插件</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="p-4">
+        <!-- 简洁介绍 -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+            <div class="flex items-center mb-2">
+                <i class="fa-solid fa-info-circle text-blue-600 mr-2"></i>
+                <h3 class="font-semibold text-blue-800 text-sm">插件功能</h3>
+            </div>
+            <p class="text-xs text-blue-700 leading-relaxed">
+                自动优化您的AI提示词，让对话更精准有效。支持多种优化模板和强度设置。
+            </p>
+        </div>
+
+        <!-- 操作指引 -->
+        <div class="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
+            <div class="flex items-center mb-2">
+                <i class="fa-solid fa-lightbulb text-green-600 mr-2"></i>
+                <h3 class="font-semibold text-green-800 text-sm">使用方法</h3>
+            </div>
+            <div class="text-xs text-green-700 space-y-1">
+                <p>1. 在任意输入框输入粗糙的提示词</p>
+                <p>2. <strong>连击三下空格键</strong></p>
+                <p>3. 等待AI自动优化并替换内容</p>
+            </div>
+        </div>
+
+        <!-- API设置 -->
+        <div class="setting-item">
+            <div class="flex items-center justify-between mb-2">
+                <label class="text-sm font-medium text-gray-700">Gemini API Key</label>
+                <span class="text-xs text-gray-500">
+                    状态: <span class="status-indicator status-disconnected" id="apiStatus"></span>
+                </span>
+            </div>
+            <input type="password" id="apiKeyInput" class="input-field mb-2" placeholder="请输入您的Gemini API Key">
+            <div class="flex justify-between items-center">
+                <a href="https://makersuite.google.com/" target="_blank" class="text-xs text-blue-600 hover:underline">
+                    获取API Key
+                </a>
+                <button id="saveApiKeyBtn" class="btn-primary">保存</button>
+            </div>
+        </div>
+
+        <!-- 优化模板 -->
+        <div class="setting-item">
+            <label class="text-sm font-medium text-gray-700 block mb-2">优化模板</label>
+            <div class="grid grid-cols-3 gap-1">
+                <button class="template-btn active" data-template="default">
+                    <i class="fa-solid fa-circle-check text-xs"></i>
+                    <span class="text-xs">默认</span>
+                </button>
+                <button class="template-btn" data-template="simple">
+                    <i class="fa-solid fa-compress text-xs"></i>
+                    <span class="text-xs">精简</span>
+                </button>
+                <button class="template-btn" data-template="extended">
+                    <i class="fa-solid fa-expand text-xs"></i>
+                    <span class="text-xs">扩展</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- AI模型选择 -->
+        <div class="setting-item">
+            <label class="text-sm font-medium text-gray-700 block mb-2">AI模型</label>
+            <select id="modelSelect" class="input-field">
+                <option value="gemini-2.5-flash-preview-05-20">Gemini 2.5 Flash (速度)</option>
+                <option value="gemini-2.5-pro-preview-06-05" selected>Gemini 2.5 Pro (质量)</option>
+            </select>
+        </div>
+
+        <!-- 优化强度 -->
+        <div class="setting-item">
+            <label class="text-sm font-medium text-gray-700 block mb-2">优化强度</label>
+            <select id="strengthSelect" class="input-field">
+                <option value="light">轻柔 (保留原意)</option>
+                <option value="medium" selected>中等 (平衡优化)</option>
+                <option value="strong">深度 (专业增强)</option>
+            </select>
+        </div>
+
+        <!-- 思考模式 -->
+        <div class="setting-item">
+            <div class="flex items-center justify-between mb-2">
+                <label class="text-sm font-medium text-gray-700">思考模式</label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="thinkingModeToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <p class="text-xs text-gray-600 mb-2">启用后AI将展示推理过程</p>
+            
+            <!-- 思考深度 -->
+            <div id="thinkingDepthContainer" class="hidden">
+                <label class="text-xs font-medium text-gray-600 block mb-1">
+                    思考深度: <span id="thinkingBudgetValue" class="font-bold">8000</span>
+                </label>
+                <input type="range" id="thinkingBudgetSlider" min="0" max="24576" step="512" value="8000" class="w-full h-1.5 rounded-lg appearance-none bg-gray-300">
+                <div class="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>关闭</span>
+                    <span>浅度</span>
+                    <span>中等</span>
+                    <span>深度</span>
+                    <span>最大</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 状态显示 -->
+        <div class="bg-gray-50 rounded-lg p-3 text-center">
+            <div id="statusMessage" class="text-sm text-gray-600">请配置API Key开始使用</div>
+        </div>
+    </div>
+
+    <script type="module" src="popup.js"></script>
+</body>
+</html> 

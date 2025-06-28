@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Better Prompt 插件图标生成器</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .icon-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        .icon-wrapper {
+            text-align: center;
+        }
+        .icon-wrapper h3 {
+            margin: 10px 0 5px 0;
+            color: #666;
+        }
+        .icon {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin: 10px;
+        }
+        .buttons {
+            text-align: center;
+            margin-top: 30px;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 0 10px;
+        }
+        button:hover {
+            background: #1d4ed8;
+        }
+        .instructions {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .instructions h3 {
+            margin-top: 0;
+            color: #1d4ed8;
+        }
+        .instructions ol {
+            color: #374151;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Better Prompt 插件图标生成器</h1>
+        
+        <div class="icon-container">
+            <div class="icon-wrapper">
+                <h3>16x16 像素</h3>
+                <canvas id="icon16" class="icon" width="16" height="16"></canvas>
+            </div>
+            <div class="icon-wrapper">
+                <h3>48x48 像素</h3>
+                <canvas id="icon48" class="icon" width="48" height="48"></canvas>
+            </div>
+            <div class="icon-wrapper">
+                <h3>128x128 像素</h3>
+                <canvas id="icon128" class="icon" width="128" height="128"></canvas>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <button onclick="generateIcons()">生成图标</button>
+            <button onclick="downloadIcons()">下载所有图标</button>
+        </div>
+
+        <div class="instructions">
+            <h3>使用说明</h3>
+            <ol>
+                <li>点击"生成图标"按钮创建三个尺寸的图标</li>
+                <li>点击"下载所有图标"按钮将图标保存到本地</li>
+                <li>将下载的文件重命名为：icon16.png、icon48.png、icon128.png</li>
+                <li>将这些文件放到 assets/icons/ 目录中</li>
+                <li>确保 manifest.json 中的图标路径正确</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        function drawIcon(canvas, size) {
+            const ctx = canvas.getContext('2d');
+            const scale = size / 128; // 基于128px设计缩放
+            
+            // 清除画布
+            ctx.clearRect(0, 0, size, size);
+            
+            // 设置高质量渲染
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            
+            // 缩放坐标系
+            ctx.scale(scale, scale);
+            
+            // 背景圆形
+            ctx.beginPath();
+            ctx.arc(64, 64, 60, 0, 2 * Math.PI);
+            ctx.fillStyle = '#3b82f6';
+            ctx.fill();
+            ctx.strokeStyle = '#1d4ed8';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // AI大脑图形 - 简化版
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.beginPath();
+            // 简化的大脑形状
+            ctx.ellipse(64, 50, 25, 18, 0, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // 神经网络线条（只在较大尺寸显示）
+            if (size >= 48) {
+                ctx.strokeStyle = 'rgba(59, 130, 246, 0.7)';
+                ctx.lineWidth = 1.5;
+                
+                // 简化的连接线
+                ctx.beginPath();
+                ctx.moveTo(50, 45);
+                ctx.lineTo(78, 45);
+                ctx.moveTo(54, 50);
+                ctx.lineTo(74, 50);
+                ctx.moveTo(50, 55);
+                ctx.lineTo(78, 55);
+                ctx.stroke();
+                
+                // 神经节点
+                ctx.fillStyle = '#3b82f6';
+                [
+                    [50, 45], [64, 45], [78, 45],
+                    [54, 50], [74, 50],
+                    [50, 55], [64, 55], [78, 55]
+                ].forEach(([x, y]) => {
+                    ctx.beginPath();
+                    ctx.arc(x, y, 1.5, 0, 2 * Math.PI);
+                    ctx.fill();
+                });
+            }
+            
+            // 优化符号 - 魔法棒
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(77, 77);
+            ctx.lineTo(93, 93);
+            ctx.stroke();
+            
+            ctx.strokeStyle = '#fbbf24';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(77, 77);
+            ctx.lineTo(93, 93);
+            ctx.stroke();
+            
+            // 星星特效（只在较大尺寸显示）
+            if (size >= 48) {
+                ctx.fillStyle = '#fbbf24';
+                
+                // 主星星
+                ctx.beginPath();
+                const starX = 95, starY = 80;
+                const spikes = 5, outerRadius = 6, innerRadius = 3;
+                
+                for (let i = 0; i < spikes * 2; i++) {
+                    const radius = i % 2 === 0 ? outerRadius : innerRadius;
+                    const angle = (i * Math.PI) / spikes;
+                    const x = starX + Math.cos(angle) * radius;
+                    const y = starY + Math.sin(angle) * radius;
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.closePath();
+                ctx.fill();
+                
+                // 小星点
+                ctx.beginPath();
+                ctx.arc(85, 100, 1.5, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                ctx.beginPath();
+                ctx.arc(100, 65, 1, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+            
+            // 只在128px显示文字
+            if (size === 128) {
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 14px Inter, -apple-system, BlinkMacSystemFont, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Better Prompt', 64, 115);
+            }
+        }
+        
+        function generateIcons() {
+            const sizes = [16, 48, 128];
+            sizes.forEach(size => {
+                const canvas = document.getElementById(`icon${size}`);
+                drawIcon(canvas, size);
+            });
+        }
+        
+        function downloadIcons() {
+            const sizes = [16, 48, 128];
+            sizes.forEach(size => {
+                const canvas = document.getElementById(`icon${size}`);
+                const link = document.createElement('a');
+                link.download = `icon${size}.png`;
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        }
+        
+        // 页面加载时自动生成图标
+        window.onload = function() {
+            generateIcons();
+        };
+    </script>
+</body>
+</html> 
