@@ -1,390 +1,337 @@
 # Better Prompt - AI提示词优化器
 
-一个强大的AI提示词优化工具，支持多个AI提供商，帮助您创建更有效的提示词。
+一个强大的AI提示词优化工具，提供**Web应用版本**和**浏览器插件版本**，帮助您在任何地方创建更有效的提示词。
 
-## ✨ 功能特性
+> 🆕 **v2.0** 新增浏览器插件版本，支持在任意网页输入框中一键优化提示词！
 
-### 🤖 多AI提供商支持
-- **Gemini API** - Google的先进AI模型
-- **OpenAI API** - GPT系列模型
-- **Anthropic API** - Claude系列模型
-- **OpenRouter API** - 统一访问多种AI模型，支持自定义模型
+## 📦 版本说明
 
-### 📝 智能优化模板
-- **默认模板** - 平衡的优化策略
-- **精简模板** - 简洁明了的优化
-- **扩展模板** - 详细深入的优化
-- **自定义模板** - 完全可定制的优化策略
+### 🌐 Web应用版本
+- 功能完整的独立Web应用
+- 支持多AI提供商和高级功能
+- 适合深度使用和批量处理
 
-### 📊 历史记录管理
-- 完整的优化历史追踪
-- 智能搜索和过滤
-- 评分和标签系统
-- 多格式导出（JSON、CSV、Markdown）
-- 详细的统计分析
+### 🔌 浏览器插件版本（推荐）
+- Chrome浏览器扩展
+- 在任意网页输入框中快速优化
+- 轻量级设计，专注核心功能
+- 自定义快捷键触发
 
-### 🎨 用户体验
-- 响应式设计，支持所有设备
-- 深色/浅色主题切换
-- 实时字符计数
-- 键盘快捷键支持
-- 直观的用户界面
+## ✨ 插件功能特性
 
-### ⚙️ 高级功能
-- 多轮优化支持
-- 批量处理
-- 数据导入/导出
-- 本地存储管理
-- 错误重试机制
+### ⚡ 快速触发
+- **自定义快捷键** - 支持7种不同的触发方式
+  - 连击三下：空格、回车、Tab、分号(;)
+  - 组合键：Ctrl+空格、Alt+空格、Ctrl+回车
+- **智能检测** - 自动识别各种输入框类型
+- **即时优化** - 无需切换页面，原地优化
+
+### 🎯 专业优化
+- **三种优化模板** - 默认、精简、扩展
+- **双模型支持** - Gemini 2.5 Flash（速度）/ Pro（质量）
+- **优化强度调节** - 轻柔、中等、深度三档
+- **思考模式** - 可视化AI推理过程
+
+### 🎨 精美界面
+- **现代化设计** - 渐变背景，卡片式布局
+- **响应式交互** - 悬停动效，状态反馈
+- **直观设置** - 一目了然的配置选项
+- **状态指示** - 实时显示连接状态
+
+## 🚀 快速开始 - 浏览器插件
+
+### 1. 安装插件
+
+#### 方法一：开发者模式安装
+1. 下载项目源码到本地
+2. 打开Chrome浏览器，进入 `chrome://extensions/`
+3. 开启右上角"开发者模式"
+4. 点击"加载已解压的扩展程序"
+5. 选择项目根目录
+6. 插件安装完成！
+
+#### 方法二：生成图标（可选）
+1. 打开 `assets/icons/generate-plugin-icons.html`
+2. 点击"下载所有图标"按钮
+3. 将文件重命名为 `icon16.png`、`icon48.png`、`icon128.png`
+4. 放置到 `assets/icons/` 目录
+
+### 2. 配置API Key
+
+1. 点击浏览器工具栏中的插件图标
+2. 在弹出窗口中输入Gemini API Key
+3. 点击"保存"按钮
+4. 看到绿色状态点表示配置成功
+
+#### 获取Gemini API Key
+1. 访问 [Google AI Studio](https://makersuite.google.com/app/apikey)
+2. 点击"Create API Key"
+3. 复制生成的密钥
+
+### 3. 自定义设置
+
+#### 优化模板选择
+- **默认** - 平衡优化策略，适合通用场景
+- **精简** - 压缩为高密度提示词
+- **扩展** - 结构化详细优化
+
+#### 模型配置
+- **Gemini 2.5 Flash** - 响应速度快，适合快速优化
+- **Gemini 2.5 Pro** - 优化质量高，适合重要内容
+
+#### 快捷键设置
+选择最适合您的触发方式：
+- `连击三下空格` - 默认方式，不干扰输入
+- `Ctrl+空格` - 最快速的触发方式
+- `连击三下回车` - 适合多行输入场景
+- 其他选项根据个人喜好选择
+
+### 4. 开始使用
+
+1. 在任意网页的输入框中输入粗糙的提示词
+2. 使用设置的快捷键触发优化（如连击三下空格）
+3. 等待AI处理，优化结果会自动替换原文
+4. 享受高质量的优化提示词！
+
+#### 支持的输入框类型
+- 文本输入框 (`<input type="text">`)
+- 文本域 (`<textarea>`)
+- 富文本编辑器 (contentEditable)
+- 各种在线编辑器（Quill、Draft.js、ProseMirror等）
+
+## 📖 使用场景
+
+### 💬 聊天对话优化
+在ChatGPT、Claude、Gemini等AI对话平台：
+```
+原始输入：帮我写个营销方案
+优化后：作为资深营销策划专家，请为我制定一份针对年轻消费群体的数字营销方案。请包含：1）目标受众分析，2）核心卖点提炼，3）渠道选择策略，4）预算分配建议，5）效果评估指标。方案应具有可操作性和创新性。
+```
+
+### 📝 写作辅助
+在各种在线编辑器中：
+```
+原始输入：写个产品介绍
+优化后：请撰写一份专业的产品介绍文案，要求：1）突出产品核心优势和差异化特色，2）使用感性和理性并重的表达方式，3）结构清晰，包含产品概述、功能特点、使用场景、客户价值四个部分，4）语言生动有吸引力，长度控制在300-500字。
+```
+
+### 🔍 搜索查询优化
+在搜索引擎和知识库：
+```
+原始输入：Python数据分析
+优化后：Python数据分析入门到进阶完整教程，包含pandas、numpy、matplotlib数据处理可视化实战案例，适合初学者零基础学习数据科学
+```
 
 ## 🏗️ 项目架构
 
 ```
 better-prompt/
-├── index.html              # 主HTML文件
-├── css/
-│   ├── styles.css          # 主要样式
-│   └── themes.css          # 主题和颜色变量
-├── js/
-│   ├── app.js              # 主应用逻辑
-│   ├── modules/
-│   │   ├── apiService.js   # API服务模块
-│   │   ├── templateManager.js  # 模板管理模块
-│   │   └── historyManager.js   # 历史记录管理模块
-│   └── utils/
-│       ├── storage.js      # 存储工具
-│       └── validators.js   # 验证工具
-└── README.md               # 项目文档
+├── 📁 Web应用版本
+│   ├── index.html              # 主页面
+│   ├── css/
+│   │   ├── styles.css          # 主要样式
+│   │   └── themes.css          # 主题变量
+│   └── js/
+│       ├── app.js              # 主应用逻辑
+│       └── modules/            # 功能模块
+│
+├── 🔌 浏览器插件版本
+│   ├── manifest.json           # 插件配置文件
+│   ├── popup.html              # 插件弹窗页面
+│   ├── popup.js                # 弹窗逻辑
+│   ├── content.js              # 内容脚本（核心功能）
+│   └── assets/
+│       └── icons/              # 插件图标
+│
+└── 📚 文档
+    ├── README.md               # 项目说明
+    └── TASKS.md                # 开发任务清单
 ```
 
-### 模块说明
+### 插件核心文件说明
 
-#### 🔧 核心模块
+#### 📄 manifest.json
+- Chrome扩展配置文件
+- 定义权限、图标、脚本等
 
-**ApiService** (`js/modules/apiService.js`)
-- 统一的API调用接口
-- 支持多个AI提供商
-- 自动重试和错误处理
-- 可配置的超时设置
+#### 🎨 popup.html + popup.js  
+- 插件设置界面
+- API配置、模板选择、快捷键设置
 
-**TemplateManager** (`js/modules/templateManager.js`)
-- 预定义优化模板管理
-- 自定义模板支持
-- 模板验证和导入/导出
+#### ⚡ content.js
+- 核心功能脚本
+- 键盘事件监听、输入框检测、API调用
 
-**HistoryManager** (`js/modules/historyManager.js`)
-- 完整的历史记录CRUD操作
-- 高级搜索和过滤功能
-- 多格式数据导出
-- 统计分析功能
-
-#### 🛠️ 工具模块
-
-**Storage** (`js/utils/storage.js`)
-- 本地存储封装
-- 数据验证和错误处理
-- 存储空间管理
-
-**Validators** (`js/utils/validators.js`)
-- API密钥格式验证
-- 输入数据验证
-- 安全性检查
-
-## 🚀 快速开始
-
-### 1. 获取API密钥
-
-#### Gemini API
-1. 访问 [Google AI Studio](https://makersuite.google.com/app/apikey)
-2. 创建新的API密钥
-3. 复制密钥到应用设置中
-
-#### OpenAI API
-1. 访问 [OpenAI Platform](https://platform.openai.com/api-keys)
-2. 创建新的API密钥
-3. 复制密钥到应用设置中
-
-#### Anthropic API
-1. 访问 [Anthropic Console](https://console.anthropic.com/)
-2. 创建新的API密钥
-3. 复制密钥到应用设置中
-
-#### OpenRouter API
-1. 访问 [OpenRouter](https://openrouter.ai/)
-2. 注册账户并创建API密钥
-3. 复制密钥到应用设置中
-4. 可选择免费模型或付费模型
-5. 支持添加自定义模型
-
-### 2. 配置应用
-
-1. 打开 `index.html` 文件
-2. 点击设置按钮（⚙️）
-3. 选择AI提供商并输入API密钥
-4. 选择优化模板
-5. 配置其他高级选项
-
-### 3. 开始优化
-
-1. 在输入框中输入您的原始提示词
-2. 点击"优化提示词"按钮
-3. 查看优化结果
-4. 可选择保存到历史记录
-
-## 📖 使用指南
-
-### 基本操作
-
-#### 提示词优化
-1. **输入原始提示词** - 在左侧文本框输入您的提示词
-2. **选择优化模板** - 根据需求选择合适的模板
-3. **执行优化** - 点击优化按钮开始处理
-4. **查看结果** - 在右侧查看优化后的提示词
-
-#### 历史记录管理
-1. **查看历史** - 点击历史按钮查看所有记录
-2. **搜索过滤** - 使用搜索框和过滤器查找特定记录
-3. **评分标签** - 为记录添加评分和标签
-4. **导出数据** - 选择格式导出历史数据
-
-### 高级功能
-
-#### 自定义模板
-```javascript
-// 模板格式示例
-{
-  name: "我的模板",
-  description: "自定义优化策略",
-  prompt: "请优化以下提示词：{input}\n\n要求：\n1. 更加清晰\n2. 更加具体\n3. 更加有效"
-}
-```
-
-#### 批量处理
-1. 准备多个提示词（每行一个）
-2. 启用批量模式
-3. 选择处理策略
-4. 执行批量优化
-
-#### 数据导出格式
-
-**JSON格式**
-```json
-{
-  "id": "unique-id",
-  "originalPrompt": "原始提示词",
-  "optimizedPrompt": "优化后提示词",
-  "template": "使用的模板",
-  "timestamp": "2024-01-01T00:00:00.000Z",
-  "rating": 5,
-  "tags": ["标签1", "标签2"]
-}
-```
-
-**CSV格式**
-```csv
-ID,原始提示词,优化提示词,模板,时间,评分,标签
-id1,原始内容,优化内容,默认,2024-01-01,5,"标签1,标签2"
-```
-
-## ⚙️ 配置选项
+## ⚙️ 插件配置选项
 
 ### API设置
-- **提供商选择** - Gemini/OpenAI/Anthropic
-- **API密钥** - 对应提供商的密钥
-- **模型选择** - 可用模型列表
-- **超时设置** - 请求超时时间
-- **重试次数** - 失败重试次数
+| 选项 | 说明 | 默认值 |
+|------|------|--------|
+| API Key | Gemini API密钥 | 无 |
+| 连接状态 | 显示API连接状态 | 红点(未连接) |
 
 ### 优化设置
-- **默认模板** - 启动时使用的模板
-- **多轮优化** - 启用连续优化
-- **自动保存** - 自动保存优化结果
-- **字符限制** - 输入字符数限制
+| 选项 | 说明 | 可选值 |
+|------|------|--------|
+| 优化模板 | 选择优化策略 | 默认/精简/扩展 |
+| AI模型 | 选择处理模型 | Flash(速度)/Pro(质量) |
+| 优化强度 | 调节优化程度 | 轻柔/中等/深度 |
 
-### 界面设置
-- **主题模式** - 深色/浅色主题
-- **语言设置** - 界面语言
-- **字体大小** - 文本显示大小
-- **动画效果** - 界面动画开关
+### 思考模式
+| 选项 | 说明 | 默认值 |
+|------|------|--------|
+| 思考模式 | 显示AI推理过程 | 关闭 |
+| 思考深度 | 推理复杂度(0-24576) | 8000 |
 
-## 🔧 开发指南
+### 快捷键设置
+| 快捷键 | 类型 | 适用场景 |
+|--------|------|----------|
+| 连击三下空格 | 默认 | 通用场景，不影响正常输入 |
+| Ctrl+空格 | 组合键 | 快速触发，适合频繁使用 |
+| 连击三下回车 | 连击 | 多行输入场景 |
+| 连击三下Tab | 连击 | 代码编辑器友好 |
+| 连击三下分号 | 连击 | 避免冲突 |
+| Alt+空格 | 组合键 | 替代方案 |
+| Ctrl+回车 | 组合键 | 表单提交替代 |
 
-### 本地开发
+## 🌐 Web应用版本
 
-1. **克隆项目**
+如果您需要更强大的功能，可以使用Web应用版本：
+
+### 额外功能
+- **多AI提供商** - 支持OpenAI、Anthropic、OpenRouter
+- **历史记录管理** - 完整的优化历史追踪
+- **批量处理** - 同时优化多个提示词
+- **数据导出** - JSON、CSV、Markdown格式
+- **自定义模板** - 创建个人优化策略
+- **多轮优化** - 连续优化提升质量
+
+### 使用方法
+1. 直接打开 `index.html` 文件
+2. 或者启动本地服务器：
 ```bash
-git clone <repository-url>
-cd better-prompt
-```
-
-2. **启动本地服务器**
-```bash
-# 使用Python
+# Python
 python -m http.server 8000
 
-# 或使用Node.js
+# Node.js  
 npx serve .
 
-# 或使用PHP
+# PHP
 php -S localhost:8000
 ```
 
-3. **访问应用**
-打开浏览器访问 `http://localhost:8000`
+## 🔧 开发指南
 
-### 代码结构
-
-#### 主应用 (app.js)
+### 插件开发
 ```javascript
-class BetterPromptApp {
-  constructor() {
-    this.apiService = new ApiService();
-    this.templateManager = new TemplateManager();
-    this.historyManager = new HistoryManager();
-    // 初始化应用
-  }
+// 添加新的快捷键类型
+// 在 content.js 的 checkTriggerKey 方法中：
+case 'new-trigger':
+    return e.code === 'KeyN' && e.ctrlKey && e.shiftKey;
+```
+
+### 添加新模板
+```javascript
+// 在 popup.js 的 PluginTemplateManager 中：
+this.prompts.newTemplate = `新的优化模板内容...`;
+```
+
+### 自定义UI
+```css
+/* 在 popup.html 的 <style> 中添加： */
+.new-style {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
-```
-
-#### 模块导入
-```javascript
-// ES6模块导入
-import { ApiService } from './modules/apiService.js';
-import { TemplateManager } from './modules/templateManager.js';
-import { HistoryManager } from './modules/historyManager.js';
-```
-
-### 添加新功能
-
-#### 1. 添加新的AI提供商
-```javascript
-// 在apiService.js中添加
-const PROVIDERS = {
-  // 现有提供商...
-  newProvider: {
-    name: 'New Provider',
-    baseUrl: 'https://api.newprovider.com',
-    models: ['model-1', 'model-2']
-  }
-};
-```
-
-#### 2. 添加新的优化模板
-```javascript
-// 在templateManager.js中添加
-const DEFAULT_TEMPLATES = {
-  // 现有模板...
-  newTemplate: {
-    name: '新模板',
-    description: '新的优化策略',
-    prompt: '优化提示词模板...'
-  }
-};
-```
-
-#### 3. 扩展历史记录功能
-```javascript
-// 在historyManager.js中添加新方法
-class HistoryManager {
-  // 现有方法...
-  
-  newFeature(params) {
-    // 新功能实现
-  }
-}
-```
-
-### 测试
-
-#### 单元测试示例
-```javascript
-// 测试API服务
-describe('ApiService', () => {
-  test('should validate API key', () => {
-    const apiService = new ApiService();
-    expect(apiService.validateApiKey('gemini', 'valid-key')).toBe(true);
-  });
-});
-```
-
-#### 集成测试
-```javascript
-// 测试完整流程
-describe('Prompt Optimization Flow', () => {
-  test('should optimize prompt successfully', async () => {
-    const app = new BetterPromptApp();
-    const result = await app.optimizePrompt('test prompt');
-    expect(result).toBeDefined();
-  });
-});
 ```
 
 ## 🐛 故障排除
 
-### 常见问题
+### 插件常见问题
 
-#### API调用失败
-- **检查API密钥** - 确保密钥正确且有效
-- **检查网络连接** - 确保能访问API服务
-- **查看控制台错误** - 检查浏览器开发者工具
+#### 快捷键不响应
+- ✅ 检查快捷键设置是否正确
+- ✅ 确保在可编辑的输入框中
+- ✅ 检查是否与其他扩展冲突
 
-#### 数据丢失
-- **检查本地存储** - 确保浏览器支持localStorage
-- **清除缓存** - 尝试清除浏览器缓存
-- **导出备份** - 定期导出历史数据
+#### API调用失败  
+- ✅ 验证API Key是否正确
+- ✅ 检查网络连接
+- ✅ 查看控制台错误信息
 
-#### 界面问题
-- **刷新页面** - 尝试硬刷新（Ctrl+F5）
-- **检查浏览器兼容性** - 使用现代浏览器
-- **禁用扩展** - 暂时禁用浏览器扩展
+#### 插件无法加载
+- ✅ 检查manifest.json语法
+- ✅ 确保开发者模式已开启
+- ✅ 重新加载扩展程序
 
 ### 错误代码
+| 代码 | 描述 | 解决方案 |
+|------|------|----------|
+| PLUGIN_001 | 快捷键冲突 | 更换触发快捷键 |
+| PLUGIN_002 | 输入框检测失败 | 检查页面DOM结构 |
+| PLUGIN_003 | 设置加载失败 | 重新配置插件设置 |
 
-| 错误代码 | 描述 | 解决方案 |
-|---------|------|----------|
-| API_001 | API密钥无效 | 检查并更新API密钥 |
-| API_002 | 请求超时 | 增加超时时间或检查网络 |
-| STORAGE_001 | 存储空间不足 | 清理历史记录或增加存储 |
-| TEMPLATE_001 | 模板格式错误 | 检查模板语法 |
+## 📈 更新日志
+
+### v2.0.0 - 浏览器插件版本 🎉
+- ✨ **全新插件版本** - Chrome扩展支持
+- ⚡ **自定义快捷键** - 7种触发方式任选
+- 🎨 **现代化界面** - 渐变设计，精美交互
+- 🤖 **专注Gemini** - 优化的Gemini集成
+- 🔧 **智能检测** - 支持各种输入框类型
+
+### v1.5.0 - Web应用增强
+- 🤖 多AI提供商支持
+- 📊 历史记录管理
+- 🎯 自定义模板功能
+- 📱 响应式设计优化
+
+### v1.0.0 - 初始版本
+- 🎉 基础提示词优化功能
+- 🤖 Gemini API集成
+- 💾 本地存储支持
+
+## 🤝 贡献
+
+欢迎为Better Prompt贡献代码！
+
+### 贡献方式
+1. Fork项目仓库
+2. 创建功能分支 (`git checkout -b feature/amazing-feature`)
+3. 提交更改 (`git commit -m 'Add amazing feature'`)
+4. 推送分支 (`git push origin feature/amazing-feature`)
+5. 创建Pull Request
+
+### 开发规范
+- 遵循现有代码风格
+- 添加适当的注释
+- 测试新功能
+- 更新相关文档
 
 ## 📄 许可证
 
 本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
 
-## 🤝 贡献
+## 📞 支持与反馈
 
-欢迎贡献代码！请遵循以下步骤：
+### 获取帮助
+- 📖 查看本文档
+- 🔍 搜索现有Issues  
+- 💬 创建新Issue
+- 📧 联系开发团队
 
-1. Fork 项目
-2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 开启 Pull Request
-
-## 📞 支持
-
-如果您遇到问题或有建议，请：
-
-1. 查看本文档的故障排除部分
-2. 搜索现有的 Issues
-3. 创建新的 Issue 描述问题
-4. 联系开发团队
-
-## 🔄 更新日志
-
-### v2.0.0 (当前版本)
-- ✨ 重构为模块化架构
-- ✨ 支持多个AI提供商
-- ✨ 增强的历史记录管理
-- ✨ 改进的错误处理
-- ✨ 新的导出功能
-
-### v1.0.0
-- 🎉 初始版本发布
-- 🤖 Gemini API支持
-- 📝 基础优化模板
-- 💾 本地存储功能
+### 反馈渠道
+- GitHub Issues - 问题报告和功能建议
+- Pull Requests - 代码贡献
+- Discussions - 使用交流和讨论
 
 ---
 
-**Better Prompt** - 让AI提示词优化变得简单高效！ 🚀 
+<div align="center">
+
+**Better Prompt** - 让AI提示词优化变得简单高效！ 🚀
+
+[🌐 Web版本](.) | [🔌 插件版本](.) | [📖 文档](README.md) | [🤝 贡献](CONTRIBUTING.md)
+
+*现在就开始优化您的AI提示词，体验更智能的对话！*
+
+</div> 
