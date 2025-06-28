@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Better Prompt - 图标生成器</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .icon-preview {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .icon-size {
+            text-align: center;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        .icon-size h3 {
+            margin: 10px 0 5px 0;
+            font-size: 14px;
+            color: #666;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        .instructions {
+            background: #e0f2fe;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #0288d1;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Better Prompt 图标生成器</h1>
+        <p>这个工具可以帮助您生成Chrome扩展所需的不同尺寸PNG图标。</p>
+        
+        <div class="instructions">
+            <h3>📋 使用步骤：</h3>
+            <ol>
+                <li>点击下方按钮下载对应尺寸的PNG图标</li>
+                <li>将下载的图标重命名为: icon-16.png, icon-32.png, icon-48.png, icon-128.png</li>
+                <li>将这些文件放入 assets/icons/ 目录</li>
+                <li>取消注释 manifest.json 中的图标配置</li>
+            </ol>
+        </div>
+
+        <div class="icon-preview">
+            <div class="icon-size">
+                <canvas id="canvas16" width="16" height="16"></canvas>
+                <h3>16x16</h3>
+                <button onclick="downloadIcon(16)">下载 PNG</button>
+            </div>
+            <div class="icon-size">
+                <canvas id="canvas32" width="32" height="32"></canvas>
+                <h3>32x32</h3>
+                <button onclick="downloadIcon(32)">下载 PNG</button>
+            </div>
+            <div class="icon-size">
+                <canvas id="canvas48" width="48" height="48"></canvas>
+                <h3>48x48</h3>
+                <button onclick="downloadIcon(48)">下载 PNG</button>
+            </div>
+            <div class="icon-size">
+                <canvas id="canvas128" width="128" height="128"></canvas>
+                <h3>128x128</h3>
+                <button onclick="downloadIcon(128)">下载 PNG</button>
+            </div>
+        </div>
+
+        <button onclick="downloadAll()">🎯 下载全部图标</button>
+        
+        <div class="instructions">
+            <h3>🔧 手动更新 manifest.json：</h3>
+            <p>图标文件准备好后，在 manifest.json 中取消注释以下配置：</p>
+            <pre style="background:#f5f5f5;padding:10px;border-radius:4px;overflow-x:auto;">
+"icons": {
+  "16": "assets/icons/icon-16.png",
+  "32": "assets/icons/icon-32.png", 
+  "48": "assets/icons/icon-48.png",
+  "128": "assets/icons/icon-128.png"
+}</pre>
+        </div>
+    </div>
+
+    <script>
+        // 简化版图标绘制函数
+        function drawIcon(canvas, size) {
+            const ctx = canvas.getContext('2d');
+            const scale = size / 128;
+            
+            // 清除画布
+            ctx.clearRect(0, 0, size, size);
+            
+            // 背景圆形
+            const centerX = size / 2;
+            const centerY = size / 2;
+            const radius = size * 0.47;
+            
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+            ctx.fillStyle = '#3b82f6';
+            ctx.fill();
+            ctx.strokeStyle = '#1d4ed8';
+            ctx.lineWidth = 1 * scale;
+            ctx.stroke();
+            
+            // AI大脑轮廓 (简化)
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.beginPath();
+            const brainX = centerX - size * 0.15;
+            const brainY = centerY - size * 0.1;
+            const brainW = size * 0.3;
+            const brainH = size * 0.2;
+            ctx.ellipse(brainX, brainY, brainW/2, brainH/2, 0, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // 神经网络线条 (简化)
+            ctx.strokeStyle = '#3b82f6';
+            ctx.lineWidth = 1 * scale;
+            ctx.beginPath();
+            ctx.moveTo(brainX - brainW/3, brainY);
+            ctx.lineTo(brainX + brainW/3, brainY);
+            ctx.moveTo(brainX, brainY - brainH/3);
+            ctx.lineTo(brainX, brainY + brainH/3);
+            ctx.stroke();
+            
+            // 优化符号 - 星星
+            ctx.fillStyle = '#fbbf24';
+            const starX = centerX + size * 0.2;
+            const starY = centerY + size * 0.2;
+            const starSize = size * 0.08;
+            
+            ctx.beginPath();
+            for (let i = 0; i < 5; i++) {
+                const angle = (i * 144 - 90) * Math.PI / 180;
+                const x = starX + Math.cos(angle) * starSize;
+                const y = starY + Math.sin(angle) * starSize;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            ctx.fill();
+            
+            // 小装饰点
+            ctx.fillStyle = '#fbbf24';
+            ctx.beginPath();
+            ctx.arc(centerX - size * 0.25, centerY + size * 0.15, size * 0.02, 0, 2 * Math.PI);
+            ctx.arc(centerX + size * 0.25, centerY - size * 0.15, size * 0.015, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+        
+        // 绘制所有尺寸的图标
+        function initIcons() {
+            [16, 32, 48, 128].forEach(size => {
+                const canvas = document.getElementById(`canvas${size}`);
+                drawIcon(canvas, size);
+            });
+        }
+        
+        // 下载指定尺寸的图标
+        function downloadIcon(size) {
+            const canvas = document.getElementById(`canvas${size}`);
+            const link = document.createElement('a');
+            link.download = `icon-${size}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
+        // 下载所有图标
+        function downloadAll() {
+            [16, 32, 48, 128].forEach(size => {
+                setTimeout(() => downloadIcon(size), size * 2); // 延迟下载避免冲突
+            });
+        }
+        
+        // 页面加载时初始化图标
+        window.onload = initIcons;
+    </script>
+</body>
+</html> 

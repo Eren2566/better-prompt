@@ -1,0 +1,56 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景圆形 -->
+  <circle cx="64" cy="64" r="60" fill="#3b82f6" stroke="#1d4ed8" stroke-width="2"/>
+  
+  <!-- AI大脑图形 -->
+  <g transform="translate(32, 28)">
+    <!-- 主要大脑轮廓 -->
+    <path d="M32 8C40 8 48 12 52 20C56 16 60 14 64 16C66 18 66 22 64 26C62 32 58 36 52 38C48 42 44 44 40 44C32 44 24 40 20 32C16 28 16 24 18 20C20 12 26 8 32 8Z" fill="#ffffff" fill-opacity="0.9"/>
+    
+    <!-- 神经网络连接线 -->
+    <g stroke="#3b82f6" stroke-width="1.5" stroke-opacity="0.7">
+      <line x1="28" y1="18" x2="36" y2="22"/>
+      <line x1="36" y1="22" x2="44" y2="18"/>
+      <line x1="32" y1="25" x2="40" y2="25"/>
+      <line x1="30" y1="30" x2="42" y2="30"/>
+      <line x1="26" y1="35" x2="34" y2="35"/>
+      <line x1="34" y1="35" x2="46" y2="35"/>
+    </g>
+    
+    <!-- 神经节点 -->
+    <g fill="#3b82f6">
+      <circle cx="28" cy="18" r="1.5"/>
+      <circle cx="36" cy="22" r="1.5"/>
+      <circle cx="44" cy="18" r="1.5"/>
+      <circle cx="32" cy="25" r="1.5"/>
+      <circle cx="40" cy="25" r="1.5"/>
+      <circle cx="30" cy="30" r="1.5"/>
+      <circle cx="42" cy="30" r="1.5"/>
+      <circle cx="26" cy="35" r="1.5"/>
+      <circle cx="34" cy="35" r="1.5"/>
+      <circle cx="46" cy="35" r="1.5"/>
+    </g>
+  </g>
+  
+  <!-- 优化符号 - 魔法棒/提升箭头 -->
+  <g transform="translate(75, 75)">
+    <!-- 魔法棒 -->
+    <path d="M2 2L18 18" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+    <path d="M2 2L18 18" stroke="#fbbf24" stroke-width="1.5" stroke-linecap="round"/>
+    
+    <!-- 星星特效 -->
+    <g fill="#fbbf24">
+      <path d="M20 5L22 9L26 9L23 12L24 16L20 14L16 16L17 12L14 9L18 9Z"/>
+      <circle cx="8" cy="25" r="1.5"/>
+      <circle cx="25" cy="8" r="1"/>
+      <circle cx="5" cy="12" r="1"/>
+    </g>
+  </g>
+  
+  <!-- 文字元素 -->
+  <g transform="translate(20, 95)">
+    <text x="44" y="12" font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="600" text-anchor="middle" fill="#ffffff">
+      Better Prompt
+    </text>
+  </g>
+</svg> 
