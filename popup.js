@@ -192,7 +192,8 @@ class PluginSettingsManager {
     openWebApplication() {
         // 完整版Web应用的部署URL
         // 🚨 部署后请将此URL替换为您的实际Vercel部署地址
-        const webAppUrl = 'https://your-better-prompt.vercel.app';
+        // const webAppUrl = 'https://www.youware.com/project/5m746mel5w?enter_from=upload';
+        const webAppUrl = 'https://better-prompt7.vercel.app/';
         
         // 在新标签页中打开完整版应用
         chrome.tabs.create({
