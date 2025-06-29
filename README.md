@@ -244,19 +244,56 @@ this.prompts.newTemplate = `新的优化模板内容...`;
 }
 ```
 
-## 🐛 故障排除
+## 🔧 故障排除
+
+### Extension context invalidated 错误
+
+如果遇到"Extension context invalidated"错误，这通常是Chrome扩展上下文失效导致的。
+
+**解决步骤**：
+1. **重新加载扩展**：
+   - 打开 `chrome://extensions/`
+   - 找到 Better Prompt 扩展
+   - 点击刷新按钮🔄
+
+2. **刷新页面**：
+   - 在出现错误的页面按 `F5` 或 `Ctrl+R`
+
+3. **使用调试工具**：
+   - 打开浏览器开发者工具（F12）
+   - 在控制台中复制粘贴 `debug-helper.js` 的内容并执行
+   - 运行 `BetterPromptDebug.fullDiagnosis()` 进行完整诊断
+
+### 使用调试工具
+
+项目包含了一个强大的调试工具 `debug-helper.js`，可以帮助诊断问题：
+
+**可用命令**：
+- `BetterPromptDebug.fullDiagnosis()` - 完整诊断
+- `BetterPromptDebug.checkContext()` - 检查扩展上下文
+- `BetterPromptDebug.testMessage()` - 测试消息通信
+- `BetterPromptDebug.checkApiKey()` - 检查API Key配置
 
 ### 插件常见问题
 
-#### 快捷键不响应
+#### 连击三次空格没有反应
+- ✅ 确保焦点在输入框中（如搜索框、文本框等）
 - ✅ 检查快捷键设置是否正确
-- ✅ 确保在可编辑的输入框中
-- ✅ 检查是否与其他扩展冲突
+- ✅ 运行调试工具检查扩展状态
 
-#### API调用失败  
-- ✅ 验证API Key是否正确
+#### 提示"请先配置API Key"
+- ✅ 点击扩展图标打开设置面板
+- ✅ 输入有效的Google AI API Key
+- ✅ 点击"保存API Key"按钮
+
+#### API Key格式无效
+- ✅ Google AI API Key格式：`AIza` 开头，总共39个字符
+- ✅ 检查是否包含特殊字符或空格
+
+#### 网络连接失败
 - ✅ 检查网络连接
-- ✅ 查看控制台错误信息
+- ✅ 确认可以访问 `generativelanguage.googleapis.com`
+- ✅ 检查防火墙设置
 
 #### 插件无法加载
 - ✅ 检查manifest.json语法
@@ -264,11 +301,12 @@ this.prompts.newTemplate = `新的优化模板内容...`;
 - ✅ 重新加载扩展程序
 
 ### 错误代码
-| 代码 | 描述 | 解决方案 |
-|------|------|----------|
-| PLUGIN_001 | 快捷键冲突 | 更换触发快捷键 |
-| PLUGIN_002 | 输入框检测失败 | 检查页面DOM结构 |
-| PLUGIN_003 | 设置加载失败 | 重新配置插件设置 |
+| 错误信息 | 描述 | 解决方案 |
+|----------|------|----------|
+| Extension context invalidated | 扩展上下文失效 | 重新加载扩展和页面 |
+| 请先配置API Key | API Key未设置 | 在插件设置中配置API Key |
+| API Key格式无效 | 密钥格式错误 | 检查密钥格式是否正确 |
+| 网络连接失败 | 网络问题 | 检查网络和防火墙设置 |
 
 ## 📈 更新日志
 

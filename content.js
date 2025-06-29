@@ -19,8 +19,35 @@ class BetterPromptContentScript {
     }
 
     init() {
+        // 检查扩展上下文是否有效
+        if (!this.checkExtensionContext()) {
+            console.warn('Better Prompt 插件上下文无效，功能可能受限');
+            return;
+        }
+        
         this.addEventListeners();
         console.log('Better Prompt 插件已激活');
+    }
+
+    // 检查扩展上下文是否有效
+    checkExtensionContext() {
+        try {
+            // 检查基本的chrome API是否可用
+            if (!chrome || !chrome.runtime) {
+                return false;
+            }
+            
+            // 尝试访问扩展ID
+            const extensionId = chrome.runtime.id;
+            if (!extensionId) {
+                return false;
+            }
+            
+            return true;
+        } catch (error) {
+            console.warn('检查扩展上下文时出错:', error);
+            return false;
+        }
     }
 
     addEventListeners() {
@@ -204,9 +231,17 @@ class BetterPromptContentScript {
             
             // 获取设置并优化文本
             const settings = await this.getExtensionSettings();
-            if (!settings.apiKey) {
+            
+            // 检查API Key配置
+            if (!settings.apiKey || settings.apiKey.trim() === '') {
                 this.showNotification('请先在插件设置中配置API Key', 'error');
                 return;
+            }
+            
+            // 确保使用的模板不为空
+            if (!settings.template || settings.template.trim() === '') {
+                console.warn('模板内容为空，使用默认模板');
+                settings.template = this.getDefaultTemplate();
             }
 
             const optimizedText = await this.optimizePrompt(originalText, settings);
@@ -221,7 +256,25 @@ class BetterPromptContentScript {
             
         } catch (error) {
             console.error('优化提示词时出错:', error);
-            this.showNotification('优化失败: ' + (error.message || '未知错误'), 'error');
+            
+            // 详细的错误分类处理
+            let errorMessage = '优化失败';
+            
+            if (error.message) {
+                if (error.message.includes('context invalidated')) {
+                    errorMessage = '扩展上下文已失效，请重新加载页面';
+                } else if (error.message.includes('API Key未配置')) {
+                    errorMessage = '请先配置API Key';
+                } else if (error.message.includes('网络连接失败')) {
+                    errorMessage = '网络连接失败，请检查网络设置';
+                } else if (error.message.includes('API请求失败')) {
+                    errorMessage = 'API调用失败，请检查API Key或网络';
+                } else {
+                    errorMessage = '优化失败: ' + error.message;
+                }
+            }
+            
+            this.showNotification(errorMessage, 'error');
         } finally {
             this.isOptimizing = false;
         }
@@ -282,26 +335,75 @@ class BetterPromptContentScript {
 
     async getExtensionSettings() {
         return new Promise((resolve) => {
-            chrome.runtime.sendMessage(
-                { action: 'getSettings' },
-                (response) => {
-                    if (response && response.settings) {
-                        resolve(response.settings);
-                    } else {
-                        // 如果无法获取设置，使用默认值
-                        resolve({
-                            apiKey: '',
-                            model: 'gemini-2.5-pro-preview-06-05',
-                            strength: 'medium',
-                            template: '',
-                            thinkingMode: false,
-                            thinkingBudget: 8000,
-                            triggerKey: 'space3'
-                        });
+            // 检查chrome.runtime是否可用
+            if (!chrome || !chrome.runtime || !chrome.runtime.sendMessage) {
+                console.warn('Chrome扩展上下文不可用，使用默认设置');
+                resolve(this.getDefaultSettings());
+                return;
+            }
+
+            try {
+                chrome.runtime.sendMessage(
+                    { action: 'getSettings' },
+                    (response) => {
+                        // 检查是否有运行时错误
+                        if (chrome.runtime.lastError) {
+                            console.warn('获取扩展设置失败:', chrome.runtime.lastError.message);
+                            // 如果是上下文失效错误，提供特定的错误处理
+                            if (chrome.runtime.lastError.message.includes('context invalidated')) {
+                                console.log('扩展上下文已失效，请重新加载页面或重新启动扩展');
+                            }
+                            resolve(this.getDefaultSettings());
+                            return;
+                        }
+
+                        // 检查响应格式 - background.js返回 { success: true, settings: ... }
+                        if (response && response.success && response.settings) {
+                            resolve(response.settings);
+                        } else if (response && response.settings) {
+                            // 兼容旧格式
+                            resolve(response.settings);
+                        } else {
+                            console.warn('未收到有效的设置响应，使用默认设置');
+                            if (response && response.error) {
+                                console.error('Background错误:', response.error);
+                            }
+                            resolve(this.getDefaultSettings());
+                        }
                     }
-                }
-            );
+                );
+            } catch (error) {
+                console.warn('发送消息时出错:', error);
+                resolve(this.getDefaultSettings());
+            }
         });
+    }
+
+    // 获取默认设置
+    getDefaultSettings() {
+        return {
+            apiKey: '',
+            model: 'gemini-2.5-pro-preview-06-05',
+            strength: 'medium',
+            template: this.getDefaultTemplate(),
+            thinkingMode: false,
+            thinkingBudget: 8000,
+            triggerKey: 'space3'
+        };
+    }
+
+    // 获取默认模板
+    getDefaultTemplate() {
+        return `作为 Prompt 优化专家，请基于以下「用户原始输入」重写生成一个高质量、目标明确的 Prompt。核心要求:
+1. **深度理解与提炼**: 精准捕捉用户的核心意图与深层需求，去除模糊或冗余表述。
+2. **明确任务目标**: 清晰定义 AI 需要完成的具体任务。
+3. **补充关键上下文**: 添加必要的背景信息、假设或约束条件，确保 AI 准确理解任务环境。
+4. **定义期望输出**: 明确说明期望的输出格式、风格、口吻或结构。
+5. **语言精练、逻辑严谨**: 使用准确、无歧义的语言，确保逻辑清晰。
+6. **保持原始意图**: 不得扭曲或添加与用户原意无关的信息。
+直接输出优化后的 Prompt 内容本身，不要包含任何额外的问候、解释、标题或标记(如"Prompt:")。
+Important: Output must start immediately with the rewritten prompt content. Do **NOT** add greetings, explanations, titles, or any extra words before or after the prompt.
+Always respond in 中文。`;
     }
 
     // 基于现有apiService.js的Gemini API调用逻辑

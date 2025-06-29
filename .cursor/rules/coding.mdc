@@ -6,7 +6,7 @@ alwaysApply: true
 ---
 description: 项目开发整体规范
 globs: 
-alwaysApply: false
+alwaysApply: true
 ---
 # 角色设定  
   

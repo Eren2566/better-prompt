@@ -445,14 +445,5 @@ document.addEventListener('DOMContentLoaded', () => {
     window.pluginSettingsManager = new PluginSettingsManager();
 });
 
-// 导出给content script使用
-if (typeof chrome !== 'undefined' && chrome.runtime) {
-    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-        if (request.action === 'getSettings') {
-            window.pluginSettingsManager?.getSettings().then(settings => {
-                sendResponse({ settings });
-            });
-            return true; // 保持消息通道开放用于异步响应
-        }
-    });
-} 
+// 注意：消息处理现在由background.js处理
+// popup.js不再直接处理来自content script的消息 

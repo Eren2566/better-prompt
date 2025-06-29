@@ -6,7 +6,7 @@ alwaysApply: true
 ---
 description: 项目任务清单管理规范
 globs: ".md"
-alwaysApply: false
+alwaysApply: true
 ---
 # Cursor 项目任务管理规则
 
