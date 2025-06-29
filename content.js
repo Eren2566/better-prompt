@@ -383,7 +383,7 @@ class BetterPromptContentScript {
     getDefaultSettings() {
         return {
             apiKey: '',
-            model: 'gemini-2.5-pro-preview-06-05',
+            model: 'gemini-2.5-flash',
             strength: 'medium',
             template: this.getDefaultTemplate(),
             thinkingMode: false,
@@ -425,7 +425,7 @@ Always respond in 中文。`;
         };
         
         // 为Gemini 2.5 Flash添加思考模式配置
-        if (model === 'gemini-2.5-flash-preview-05-20' && thinkingMode && thinkingBudget > 0) {
+        if (model === 'gemini-2.5-flash' && thinkingMode && thinkingBudget > 0) {
             generationConfig.thinkingBudget = thinkingBudget;
         }
 

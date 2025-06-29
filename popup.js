@@ -102,7 +102,7 @@ class PluginSettingsManager {
         this.elements = this.initializeElements();
         this.settings = {
             apiKey: '',
-            model: 'gemini-2.5-pro-preview-06-05',
+            model: 'gemini-2.5-pro',
             strength: 'medium',
             temperature: 0.5,
             thinkingMode: false,
@@ -305,7 +305,7 @@ class PluginSettingsManager {
             this.settings.apiKey = await ExtensionStorageManager.get('apiKey_gemini', '');
             
             // 加载其他设置 - 基于app.js的loadSettings方法
-            this.settings.model = await ExtensionStorageManager.get('selectedModel', 'gemini-2.5-pro-preview-06-05');
+            this.settings.model = await ExtensionStorageManager.get('selectedModel', 'gemini-2.5-pro');
             this.settings.strength = await ExtensionStorageManager.get('optimizationStrength', 'medium');
             this.settings.temperature = await ExtensionStorageManager.get('temperature', 0.5);
             this.settings.thinkingMode = await ExtensionStorageManager.get('thinkingMode', false);
