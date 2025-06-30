@@ -383,11 +383,11 @@ class BetterPromptContentScript {
     getDefaultSettings() {
         return {
             apiKey: '',
-            model: 'gemini-2.5-flash',
+            model: 'gemini-2.5-flash', // 确保默认模型为flash
             strength: 'medium',
             template: this.getDefaultTemplate(),
             thinkingMode: false,
-            thinkingBudget: 8000,
+            thinkingBudget: 8192, // 修改默认值为8192
             triggerKey: 'space3'
         };
     }
@@ -424,8 +424,12 @@ Always respond in 中文。`;
             maxOutputTokens: 8192
         };
         
-        // 为Gemini 2.5 Flash添加思考模式配置
+        // 为Gemini 2.5模型添加思考模式配置
         if (model === 'gemini-2.5-flash' && thinkingMode && thinkingBudget > 0) {
+            generationConfig.thinkingBudget = thinkingBudget;
+        }
+
+        if (model === 'gemini-2.5-pro' && thinkingMode && thinkingBudget >= 128) {
             generationConfig.thinkingBudget = thinkingBudget;
         }
 

@@ -67,6 +67,12 @@ Always respond in 中文。`,
 Important: Output must start immediately with the rewritten prompt content (beginning with "核心目标"). Do **NOT** add greetings, explanations, titles, section numbers (like 1.) unless part of the prompt itself. Use Markdown headers (e.g., ## 核心目标) for structure if appropriate for the target AI, otherwise use clear text labels followed by content.
 Always respond in 中文。`
         };
+        
+        this.templateDisplayNames = {
+            default: '默认优化',
+            simple: '精简模式', 
+            extended: '扩展模块'
+        };
     }
 
     async loadFromStorage() {
@@ -91,6 +97,14 @@ Always respond in 中文。`
     getActiveTemplateContent() {
         return this.prompts[this.activeTemplate] || this.prompts.default;
     }
+    
+    getTemplateContent(templateName) {
+        return this.prompts[templateName] || this.prompts.default;
+    }
+    
+    getTemplateDisplayName(templateName) {
+        return this.templateDisplayNames[templateName] || templateName;
+    }
 }
 
 /**
@@ -102,11 +116,11 @@ class PluginSettingsManager {
         this.elements = this.initializeElements();
         this.settings = {
             apiKey: '',
-            model: 'gemini-2.5-pro',
+            model: 'gemini-2.5-flash', // 修改默认模型为flash
             strength: 'medium',
             temperature: 0.5,
             thinkingMode: false,
-            thinkingBudget: 8000,
+            thinkingBudget: 8192, // 修改默认值为8192
             triggerKey: 'space3'
         };
         
@@ -123,6 +137,11 @@ class PluginSettingsManager {
             
             // 模板相关
             templateButtons: document.querySelectorAll('.template-btn'),
+            templateViewBtn: document.getElementById('templateViewBtn'),
+            templateModal: document.getElementById('templateModal'),
+            templateContent: document.getElementById('templateContent'),
+            templateTitle: document.getElementById('templateTitle'),
+            closeTemplateModalBtn: document.getElementById('closeTemplateModalBtn'),
             
             // 设置相关
             modelSelect: document.getElementById('modelSelect'),
@@ -131,6 +150,7 @@ class PluginSettingsManager {
             thinkingDepthContainer: document.getElementById('thinkingDepthContainer'),
             thinkingBudgetSlider: document.getElementById('thinkingBudgetSlider'),
             thinkingBudgetValue: document.getElementById('thinkingBudgetValue'),
+            thinkingBudgetRange: document.getElementById('thinkingBudgetRange'),
             
             // 快捷键相关
             triggerKeySelect: document.getElementById('triggerKeySelect'),
@@ -158,16 +178,33 @@ class PluginSettingsManager {
             button.addEventListener('click', (e) => this.handleTemplateSelection(e));
         });
         
-        // 模型选择
-        this.elements.modelSelect?.addEventListener('change', () => this.saveSettings());
+        // 模板内容查看
+        this.elements.templateViewBtn?.addEventListener('click', () => this.showTemplateModal());
+        this.elements.closeTemplateModalBtn?.addEventListener('click', () => this.hideTemplateModal());
+        
+        // 第二个关闭按钮
+        const closeTemplateModalBtn2 = document.getElementById('closeTemplateModalBtn2');
+        closeTemplateModalBtn2?.addEventListener('click', () => this.hideTemplateModal());
+        
+        this.elements.templateModal?.addEventListener('click', (e) => {
+            if (e.target === this.elements.templateModal) {
+                this.hideTemplateModal();
+            }
+        });
+        
+        // 模型选择 - 添加思考模式可见性更新
+        this.elements.modelSelect?.addEventListener('change', () => {
+            this.updateThinkingModeVisibility();
+            this.updateThinkingBudgetRange();
+            this.saveSettings();
+        });
         
         // 优化强度选择
         this.elements.strengthSelect?.addEventListener('change', () => this.saveSettings());
         
         // 思考模式开关 - 基于app.js的思考模式处理
         this.elements.thinkingModeToggle?.addEventListener('change', () => {
-            this.updateThinkingDepthVisibility();
-            this.saveSettings();
+            this.handleThinkingModeToggle();
         });
         
         // 思考深度滑块 - 基于app.js的思考深度处理
@@ -188,11 +225,35 @@ class PluginSettingsManager {
         });
     }
     
+    // 显示模板内容模态框
+    showTemplateModal() {
+        const activeTemplate = this.templateManager.getActive();
+        const templateContent = this.templateManager.getTemplateContent(activeTemplate);
+        const templateName = this.templateManager.getTemplateDisplayName(activeTemplate);
+        
+        if (this.elements.templateTitle) {
+            this.elements.templateTitle.textContent = `${templateName} - 模板内容`;
+        }
+        
+        if (this.elements.templateContent) {
+            this.elements.templateContent.textContent = templateContent;
+        }
+        
+        if (this.elements.templateModal) {
+            this.elements.templateModal.style.display = 'flex';
+        }
+    }
+    
+    // 隐藏模板内容模态框
+    hideTemplateModal() {
+        if (this.elements.templateModal) {
+            this.elements.templateModal.style.display = 'none';
+        }
+    }
+    
     // 打开完整版Web应用
     openWebApplication() {
         // 完整版Web应用的部署URL
-        // 🚨 部署后请将此URL替换为您的实际Vercel部署地址
-        // const webAppUrl = 'https://www.youware.com/project/5m746mel5w?enter_from=upload';
         const webAppUrl = 'https://better-prompt7.vercel.app/';
         
         // 在新标签页中打开完整版应用
@@ -219,11 +280,58 @@ class PluginSettingsManager {
         this.saveSettings();
     }
 
+    // 更新思考模式可见性 - 基于原版应用逻辑
+    updateThinkingModeVisibility() {
+        const selectedModel = this.elements.modelSelect?.value || this.settings.model;
+        const thinkingModeSection = document.getElementById('thinkingModeSection');
+        
+        // 只有Gemini 2.5模型支持思考模式
+        const isThinkingSupported = selectedModel === 'gemini-2.5-flash' || selectedModel === 'gemini-2.5-pro';
+        
+        if (thinkingModeSection) {
+            thinkingModeSection.style.display = isThinkingSupported ? 'block' : 'none';
+        }
+    }
+
     // 基于app.js的思考深度可见性更新
     updateThinkingDepthVisibility() {
         const isThinkingEnabled = this.elements.thinkingModeToggle?.checked;
         if (this.elements.thinkingDepthContainer) {
-            this.elements.thinkingDepthContainer.classList.toggle('hidden', !isThinkingEnabled);
+            this.elements.thinkingDepthContainer.style.display = isThinkingEnabled ? 'block' : 'none';
+        }
+    }
+
+    // 更新思考预算范围 - 基于原版应用的不同模型设置
+    updateThinkingBudgetRange() {
+        const selectedModel = this.elements.modelSelect?.value || this.settings.model;
+        
+        if (this.elements.thinkingBudgetSlider && this.elements.thinkingBudgetRange) {
+            // 根据不同模型设置不同的思考预算范围
+            if (selectedModel === 'gemini-2.5-flash') {
+                this.elements.thinkingBudgetSlider.min = '0';
+                this.elements.thinkingBudgetSlider.max = '24576';
+                this.elements.thinkingBudgetSlider.step = '128';
+                this.elements.thinkingBudgetRange.textContent = '预算范围: 0-24576';
+                
+                // 如果当前值超出范围，调整到默认值
+                const currentValue = parseInt(this.elements.thinkingBudgetSlider.value);
+                if (currentValue > 24576 || currentValue < 0) {
+                    this.elements.thinkingBudgetSlider.value = '8192';
+                    this.updateThinkingBudgetDisplay();
+                }
+            } else if (selectedModel === 'gemini-2.5-pro') {
+                this.elements.thinkingBudgetSlider.min = '128';
+                this.elements.thinkingBudgetSlider.max = '32768';
+                this.elements.thinkingBudgetSlider.step = '128';
+                this.elements.thinkingBudgetRange.textContent = '预算范围: 128-32768';
+                
+                // 如果当前值超出范围，调整到默认值
+                const currentValue = parseInt(this.elements.thinkingBudgetSlider.value);
+                if (currentValue > 32768 || currentValue < 128) {
+                    this.elements.thinkingBudgetSlider.value = '8192';
+                    this.updateThinkingBudgetDisplay();
+                }
+            }
         }
     }
 
@@ -233,6 +341,34 @@ class PluginSettingsManager {
         if (this.elements.thinkingBudgetValue) {
             this.elements.thinkingBudgetValue.textContent = value;
         }
+        
+        // 实现原版逻辑：当拖动到最左时自动关闭思考模式
+        const selectedModel = this.elements.modelSelect?.value || this.settings.model;
+        const minValue = selectedModel === 'gemini-2.5-pro' ? 128 : 0;
+        
+        if (parseInt(value) <= minValue && this.elements.thinkingModeToggle?.checked) {
+            // 自动关闭思考模式
+            this.elements.thinkingModeToggle.checked = false;
+            this.updateThinkingDepthVisibility();
+            this.settings.thinkingMode = false;
+            this.saveSettings();
+        }
+    }
+
+    // 重写思考模式开关处理
+    handleThinkingModeToggle() {
+        const isEnabled = this.elements.thinkingModeToggle?.checked;
+        
+        if (isEnabled) {
+            // 当重新开启思考模式时，恢复到默认值8192
+            if (this.elements.thinkingBudgetSlider) {
+                this.elements.thinkingBudgetSlider.value = '8192';
+                this.updateThinkingBudgetDisplay();
+            }
+        }
+        
+        this.updateThinkingDepthVisibility();
+        this.saveSettings();
     }
 
     // 更新快捷键描述
@@ -304,12 +440,12 @@ class PluginSettingsManager {
             // 加载API Key
             this.settings.apiKey = await ExtensionStorageManager.get('apiKey_gemini', '');
             
-            // 加载其他设置 - 基于app.js的loadSettings方法
-            this.settings.model = await ExtensionStorageManager.get('selectedModel', 'gemini-2.5-pro');
+            // 加载其他设置 - 基于app.js的loadSettings方法，修改默认模型
+            this.settings.model = await ExtensionStorageManager.get('selectedModel', 'gemini-2.5-flash');
             this.settings.strength = await ExtensionStorageManager.get('optimizationStrength', 'medium');
             this.settings.temperature = await ExtensionStorageManager.get('temperature', 0.5);
             this.settings.thinkingMode = await ExtensionStorageManager.get('thinkingMode', false);
-            this.settings.thinkingBudget = await ExtensionStorageManager.get('thinkingBudget', 8000);
+            this.settings.thinkingBudget = await ExtensionStorageManager.get('thinkingBudget', 8192);
             this.settings.triggerKey = await ExtensionStorageManager.get('triggerKey', 'space3');
             
             // 加载模板设置
@@ -383,7 +519,9 @@ class PluginSettingsManager {
         this.updateTemplateButtons();
         
         // 更新思考模式相关UI
+        this.updateThinkingModeVisibility();
         this.updateThinkingDepthVisibility();
+        this.updateThinkingBudgetRange();
         this.updateThinkingBudgetDisplay();
         
         // 更新快捷键描述
@@ -400,7 +538,7 @@ class PluginSettingsManager {
 
     updateApiStatus(isConnected) {
         if (this.elements.apiStatus) {
-            this.elements.apiStatus.className = `status-indicator ${isConnected ? 'status-connected' : 'status-disconnected'}`;
+            this.elements.apiStatus.className = `api-status-indicator ${isConnected ? 'connected' : ''}`;
         }
         
         if (this.elements.statusMessage) {
@@ -410,6 +548,10 @@ class PluginSettingsManager {
     }
 
     showStatus(message, type = 'info') {
+        // 创建弹窗提示
+        this.showNotification(message, type);
+        
+        // 同时更新底部状态（如果需要）
         if (this.elements.statusMessage) {
             this.elements.statusMessage.textContent = message;
             this.elements.statusMessage.className = `text-sm ${
@@ -418,10 +560,85 @@ class PluginSettingsManager {
             }`;
         }
         
-        // 3秒后恢复默认状态
+        // 2秒后恢复默认状态
         setTimeout(() => {
             this.updateApiStatus(!!this.settings.apiKey);
-        }, 3000);
+        }, 2000);
+    }
+
+    // 创建通知弹窗
+    showNotification(message, type = 'info') {
+        // 创建通知元素
+        const notification = document.createElement('div');
+        notification.className = 'better-prompt-notification';
+        
+        // 设置样式
+        const styles = {
+            position: 'fixed',
+            top: '20px',
+            right: '20px',
+            zIndex: '10000',
+            padding: '12px 16px',
+            borderRadius: '8px',
+            color: 'white',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            fontSize: '14px',
+            fontWeight: '500',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+            maxWidth: '280px',
+            wordWrap: 'break-word',
+            transform: 'translateX(100%)',
+            transition: 'transform 0.3s ease-in-out',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+        };
+
+        // 根据类型设置背景色和图标
+        let backgroundColor, icon;
+        switch (type) {
+            case 'success':
+                backgroundColor = '#10b981';
+                icon = '✅';
+                break;
+            case 'error':
+                backgroundColor = '#ef4444';
+                icon = '❌';
+                break;
+            case 'warning':
+                backgroundColor = '#f59e0b';
+                icon = '⚠️';
+                break;
+            default:
+                backgroundColor = '#3b82f6';
+                icon = 'ℹ️';
+        }
+
+        styles.backgroundColor = backgroundColor;
+
+        // 应用样式
+        Object.assign(notification.style, styles);
+        
+        // 设置内容
+        notification.innerHTML = `${icon} ${message}`;
+        
+        // 添加到页面
+        document.body.appendChild(notification);
+        
+        // 动画显示
+        setTimeout(() => {
+            notification.style.transform = 'translateX(0)';
+        }, 10);
+        
+        // 自动消失
+        setTimeout(() => {
+            notification.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, type === 'error' ? 4000 : 2500);
     }
 
     // 获取当前设置用于content script

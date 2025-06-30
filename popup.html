@@ -22,9 +22,9 @@
         
         .container {
             background: white;
-            border-radius: 16px;
-            margin: 12px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+            margin: 8px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
             overflow: hidden;
         }
         
@@ -32,7 +32,7 @@
         .header {
             background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
             color: white;
-            padding: 24px 20px;
+            padding: 18px 16px;
             text-align: center;
             position: relative;
             overflow: hidden;
@@ -92,7 +92,7 @@
         
         /* Content */
         .content {
-            padding: 24px 20px;
+            padding: 16px 16px;
         }
         
         /* Info Cards */
@@ -198,9 +198,9 @@
         /* Settings Sections */
         .settings-section {
             background: #f8fafc;
-            border-radius: 12px;
-            padding: 18px;
-            margin-bottom: 16px;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
             border: 1px solid #e2e8f0;
             transition: all 0.2s ease;
         }
@@ -213,8 +213,8 @@
         .section-header {
             display: flex;
             align-items: center;
-            justify-content: between;
-            margin-bottom: 14px;
+            justify-content: space-between;
+            margin-bottom: 12px;
         }
         
         .section-title {
@@ -238,28 +238,37 @@
             font-size: 11px;
         }
         
-        .status-badge {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
-            color: #64748b;
-        }
-        
-        .status-dot {
-            width: 8px;
-            height: 8px;
+                /* API状态指示器 */
+        .api-status-indicator {
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
             background: #ef4444;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        
-        .status-dot.connected {
+
+        .api-status-indicator.connected {
             background: #10b981;
+        }
+
+        /* API设置区域高度优化 */
+        .api-section {
+            padding: 10px 12px;
+        }
+
+        .api-section .form-group {
+            margin-bottom: 8px;
+        }
+
+        .api-section .input-field {
+            padding: 10px 14px;
+            height: auto;
         }
         
         /* Form Elements */
         .form-group {
-            margin-bottom: 14px;
+            margin-bottom: 10px;
         }
         
         .form-group:last-child {
@@ -650,6 +659,142 @@
         .full-app-btn:hover .arrow-icon {
             transform: translateX(2px);
         }
+
+        /* 新增样式 */
+        
+        /* 查看按钮 */
+        .view-btn {
+            background: transparent;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #64748b;
+        }
+
+        .view-btn:hover {
+            background: #f1f5f9;
+            border-color: #4f46e5;
+            color: #4f46e5;
+        }
+
+
+
+        /* 范围信息 */
+        .range-info {
+            font-size: 10px;
+            color: #8b5cf6;
+            font-weight: 500;
+        }
+
+        /* 模态框样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .modal-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #64748b;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        .modal-body {
+            padding: 20px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .template-content-container {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .template-content {
+            margin: 0;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            color: #334155;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .modal-footer {
+            padding: 16px 20px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            border-color: #cbd5e1;
+        }
     </style>
 </head>
 <body>
@@ -700,16 +845,13 @@
             </div>
 
             <!-- API设置 -->
-            <div class="settings-section">
+            <div class="settings-section api-section">
                 <div class="section-header">
                     <div class="section-title">
                         <div class="section-icon">🔑</div>
                         Gemini API Key
                     </div>
-                    <div class="status-badge">
-                        <span>状态</span>
-                        <div class="status-dot" id="apiStatus"></div>
-                    </div>
+                    <div class="api-status-indicator" id="apiStatus"></div>
                 </div>
                 <div class="form-group">
                     <input type="password" id="apiKeyInput" class="input-field" placeholder="请输入您的Gemini API Key">
@@ -722,9 +864,14 @@
 
             <!-- 优化模板 -->
             <div class="settings-section">
-                <div class="section-title">
-                    <div class="section-icon">📝</div>
-                    优化模板
+                <div class="section-header">
+                    <div class="section-title">
+                        <div class="section-icon">📝</div>
+                        优化模板
+                    </div>
+                    <button id="templateViewBtn" class="view-btn" title="查看当前模板内容">
+                        👁️
+                    </button>
                 </div>
                 <div class="template-grid">
                     <button class="template-btn active" data-template="default">
@@ -772,13 +919,12 @@
             </div>
 
             <!-- 思考模式 -->
-            <div class="settings-section">
-                <div class="section-title">
-                    <div class="section-icon">🧠</div>
-                    思考模式
-                </div>
-                <div class="toggle-container">
-                    <div class="toggle-label">启用AI推理过程显示</div>
+            <div class="settings-section" id="thinkingModeSection">
+                <div class="section-header">
+                    <div class="section-title">
+                        <div class="section-icon">🧠</div>
+                        思考模式
+                    </div>
                     <label class="toggle-switch">
                         <input type="checkbox" id="thinkingModeToggle">
                         <span class="slider"></span>
@@ -786,13 +932,15 @@
                 </div>
                 
                 <!-- 思考深度 -->
-                <div id="thinkingDepthContainer" class="hidden">
+                <div id="thinkingDepthContainer" style="display: none;">
                     <div class="range-container">
                         <div class="range-header">
-                            <div class="range-label">思考深度</div>
-                            <div class="range-value" id="thinkingBudgetValue">8000</div>
+                            <div class="range-label">
+                                思考深度: <span class="range-value" id="thinkingBudgetValue">8192</span>
+                            </div>
+                            <div class="range-info" id="thinkingBudgetRange">预算范围: 0-24576</div>
                         </div>
-                        <input type="range" id="thinkingBudgetSlider" min="0" max="24576" step="512" value="8000" class="range-slider">
+                        <input type="range" id="thinkingBudgetSlider" min="0" max="24576" step="128" value="8192" class="range-slider">
                         <div class="range-labels">
                             <span>关闭</span>
                             <span>浅度</span>
@@ -821,14 +969,6 @@
                         <option value="ctrl+enter">Ctrl + 回车</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <div class="trigger-help">
-                        <div class="trigger-help-icon">💡</div>
-                        <div class="trigger-help-text">
-                            <span id="triggerDescription">在输入框中连击三下空格键即可触发提示词优化</span>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <!-- 完整版应用跳转 -->
@@ -849,6 +989,24 @@
             <!-- 状态显示 -->
             <div class="status-message" id="statusMessage">
                 请配置API Key开始使用
+            </div>
+        </div>
+    </div>
+
+    <!-- 模板内容查看模态框 -->
+    <div id="templateModal" class="modal-overlay" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="templateTitle" class="modal-title">模板内容</h3>
+                <button id="closeTemplateModalBtn" class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="template-content-container">
+                    <pre id="templateContent" class="template-content"></pre>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="closeTemplateModalBtn2" class="btn-secondary">关闭</button>
             </div>
         </div>
     </div>
